@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Map;
 
 import de.mrjulsen.crn.CreateRailwaysNavigator;
+import de.mrjulsen.crn.config.ModCommonConfig;
 import de.mrjulsen.crn.data.StationTag;
 import de.mrjulsen.crn.data.TagName;
 import de.mrjulsen.crn.data.TrainGroup;
@@ -99,7 +100,7 @@ public class GlobalSettings implements INBTSerializable {
     
         try {
             NbtIo.writeCompressed(nbt, new File(server.getWorldPath(new LevelResource("data/" + FILENAME)).toString()));
-            CreateRailwaysNavigator.LOGGER.info("Saved global settings.");
+            if (ModCommonConfig.ADVANCED_LOGGING.get()) CreateRailwaysNavigator.LOGGER.info("Saved global settings.");
         } catch (IOException e) {
             CreateRailwaysNavigator.LOGGER.error("Unable to save global settings.", e);
         }    

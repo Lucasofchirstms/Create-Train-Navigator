@@ -15,6 +15,7 @@ public class ModCommonConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> TOTAL_DURATION_DEVIATION_THRESHOLD;
     public static final ForgeConfigSpec.ConfigValue<Boolean> CUSTOM_TRANSIT_TIME_CALCULATION;
     public static final ForgeConfigSpec.ConfigValue<Boolean> EXCLUDE_TRAINS;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ADVANCED_LOGGING;
 
     static {
         BUILDER.push(CreateRailwaysNavigator.MOD_ID + "_common_config");
@@ -40,6 +41,9 @@ public class ModCommonConfig {
             .defineInRange("train_data_calculation.schedule_deviation_threshold", 500, 100, 24000);
         AUTO_RESET_TIMINGS = BUILDER.comment(new String[] {"[In Cycles]", "(ONLY WORKS FOR TRAINS WITH DYNAMIC DELAYS! Trains without dynamic delays do this every new schedule section by default.)", " ", "Every X cycles the scheduled times are updated to the current real-time data. (Default: 2; Disabled: 0)"})
             .defineInRange("train_data_calculation.auto_reset_timings", 2, 0, Integer.MAX_VALUE);
+
+        ADVANCED_LOGGING = BUILDER.comment(new String[] {"Prints more details to the console to better observe the behavior of CRN. Only relevant for debugging."})
+            .define("debug.advanced_logging", false);
 
         BUILDER.pop();
         SPEC = BUILDER.build();
