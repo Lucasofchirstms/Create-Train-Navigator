@@ -262,7 +262,7 @@ public class AdvancedDisplayBlockEntity extends SmartBlockEntity implements
         return !stationNameFilter.contains("*");
     }
 
-    public StationInfo getStationInfo2() {
+    public StationInfo getStationInfo() {
         return stationInfo;
     }
 
@@ -548,7 +548,7 @@ public class AdvancedDisplayBlockEntity extends SmartBlockEntity implements
         pTag.putByte(NBT_TRAIN_NAME_WIDTH, getTrainNameWidth());
         pTag.putByte(NBT_TIME_DISPLAY, getTimeDisplay().getId());
 
-        getStationInfo2().writeNbt(pTag);
+        getStationInfo().writeNbt(pTag);
 
         if (getStops() != null && !getStops().isEmpty()) {            
             ListTag list = new ListTag();

@@ -41,6 +41,7 @@ public class BERPlatformInformative implements IBERRenderSubtype<AdvancedDisplay
     private boolean showInfoLine = false;
     private Component infoLineText = TextUtils.empty();
     private BERLabel statusLabel;
+    private final BERLabel platformLabel = new BERLabel();
     private BERLabel[] focusArea;
     private BERLabel[][] lines;
     private final BERLabel followingTrainsLabel = new BERLabel(ELanguage.translate(keyFollowingTrains)).setPos(3, 16).setScale(0.2f, 0.2f).setYScale(0.2f);
@@ -49,6 +50,7 @@ public class BERPlatformInformative implements IBERRenderSubtype<AdvancedDisplay
     @Override
     public void renderTick(float deltaTime) {
         DLUtils.doIfNotNull(statusLabel, x -> x.renderTick());
+        DLUtils.doIfNotNull(platformLabel, x -> x.renderTick());
         DLUtils.doIfNotNull(focusArea, x -> {
             for (int i = 0; i < x.length; i++) {
                 DLUtils.doIfNotNull(x[i], y -> y.renderTick());
@@ -94,9 +96,9 @@ public class BERPlatformInformative implements IBERRenderSubtype<AdvancedDisplay
                     } else if (i == LineComponent.TRAIN_NAME.i()) {
                         graphics.poseStack().translate(-label.getX() + maxWidth - 3 - label.getTextWidth(), 0, 0);
                     } else if (i == LineComponent.DESTINATION.i()) {
-                        graphics.poseStack().translate(-label.getX() + 5 + a[LineComponent.PLATFORM.i()].getTextWidth(), 0, 0);
+                        graphics.poseStack().translate(-label.getX() + 5 + platformLabel.getTextWidth(), 0, 0);
                     } else if (i == LineComponent.STOPOVERS.i()) {
-                        graphics.poseStack().translate(-label.getX() + 5 + a[LineComponent.PLATFORM.i()].getTextWidth(), 0, 0);
+                        graphics.poseStack().translate(-label.getX() + 5 + platformLabel.getTextWidth(), 0, 0);
                     } else if (i == LineComponent.PLATFORM.i()) {
                         graphics.poseStack().translate(-label.getX() + 3, 0, 0);
                     }
@@ -118,12 +120,13 @@ public class BERPlatformInformative implements IBERRenderSubtype<AdvancedDisplay
 
         if (statusLabel != null && !statusLabel.getText().getString().isBlank()) {
             graphics.poseStack().pushPose();
-            if (backSide && focusArea != null && focusArea[LineComponent.PLATFORM.i()] != null) {                
-                graphics.poseStack().translate(-statusLabel.getX() + 5 + focusArea[LineComponent.PLATFORM.i()].getTextWidth(), 0, 0);
+            if (backSide && focusArea != null && platformLabel != null) {                
+                graphics.poseStack().translate(-statusLabel.getX() + 5 + platformLabel.getTextWidth(), 0, 0);
             }
             DLUtils.doIfNotNull(statusLabel, x -> x.render(graphics, light));
             graphics.poseStack().popPose();
         }
+        platformLabel.render(graphics, light);
     }
 
     @Override
@@ -134,6 +137,15 @@ public class BERPlatformInformative implements IBERRenderSubtype<AdvancedDisplay
             lines = null;
             focusArea = null;
             statusLabel = null;
+
+            if (blockEntity.isPlatformFixed() && blockEntity.getStationInfo() != null) {
+                this.platformLabel
+                    .setText(TextUtils.text(blockEntity.getStationInfo().platform()).withStyle(ChatFormatting.BOLD))
+                    .setPos(blockEntity.getXSizeScaled() * 16 - 3 - platformLabel.getTextWidth(), 3);
+                ;
+            } else {
+                this.platformLabel.setText(TextUtils.empty());
+            }
             return;
         }
             
@@ -201,12 +213,12 @@ public class BERPlatformInformative implements IBERRenderSubtype<AdvancedDisplay
         ;
         focusArea[LineComponent.TRAIN_NAME.i()] = trainNameLabel;
 
-        BERLabel platformLabel = new BERLabel()
+        this.platformLabel
             .setYScale(0.8f)
             .setScale(0.6f, 0.5f)
             .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
         ;
-        focusArea[LineComponent.PLATFORM.i()] = platformLabel;
+        //focusArea[LineComponent.PLATFORM.i()] = platformLabel;
 
         BERLabel destinationLabel = new BERLabel()
             .setYScale(0.6f)
@@ -304,8 +316,7 @@ public class BERPlatformInformative implements IBERRenderSubtype<AdvancedDisplay
             .setMaxWidth(blockEntity.getTrainNameWidth(), BoundsHitReaction.SCALE_SCROLL)
         ;
 
-        BERLabel platformLabel = focusArea[LineComponent.PLATFORM.i()];
-        platformLabel
+        this.platformLabel
             .setText(TextUtils.text(stop.getStationData().getStationInfo().platform()).withStyle(ChatFormatting.BOLD))
             .setPos(blockEntity.getXSizeScaled() * 16 - 3 - platformLabel.getTextWidth(), 3);
         ;
