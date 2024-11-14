@@ -70,7 +70,7 @@ public class BERPlatformDetailed implements IBERRenderSubtype<AdvancedDisplayBlo
     @Override
     public void tick(Level level, BlockPos pos, BlockState state, AdvancedDisplayBlockEntity blockEntity, AdvancedDisplayRenderInstance parent) {
         timeLabel
-            .setText(ELanguage.translate(keyTime, ModUtils.formatTime(DragonLib.getCurrentWorldTime(), blockEntity.getTimeDisplay() == ETimeDisplay.ETA)))
+            .setText(ELanguage.translate(keyTime, ModUtils.formatTime(DragonLib.getCurrentWorldTime(), false)))
         ;
     }
     

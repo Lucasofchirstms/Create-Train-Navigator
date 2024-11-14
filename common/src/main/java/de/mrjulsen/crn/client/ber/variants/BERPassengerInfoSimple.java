@@ -127,7 +127,7 @@ public class BERPassengerInfoSimple implements IBERRenderSubtype<AdvancedDisplay
             int slide = (int)(DragonLib.getCurrentWorldTime() % (TICKS_PER_SLIDE * slides)) / TICKS_PER_SLIDE;
             switch (slide) {                
                 case 0 -> label.setText(TextUtils.text(blockEntity.getTrainData().getTrainData().getName() + " " + blockEntity.getTrainData().getNextStop().get().getDestination()));
-                case 1 -> label.setText(ELanguage.translate(keyDate, blockEntity.getLevel().getDayTime() / Level.TICKS_PER_DAY, ModUtils.formatTime(DragonLib.getCurrentWorldTime(), blockEntity.getTimeDisplay() == ETimeDisplay.ETA)));
+                case 1 -> label.setText(ELanguage.translate(keyDate, blockEntity.getLevel().getDayTime() / Level.TICKS_PER_DAY, ModUtils.formatTime(DragonLib.getCurrentWorldTime(), false)));
                 case 2 -> label.setText(ModUtils.calcSpeedString(blockEntity.getTrainData().getSpeed(), ModClientConfig.SPEED_UNIT.get()));
             }            
             this.exitSide = TrainExitSide.UNKNOWN;
