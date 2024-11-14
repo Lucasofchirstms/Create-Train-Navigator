@@ -1,7 +1,5 @@
 package de.mrjulsen.crn.registry;
 
-import java.util.Optional;
-
 import com.simibubi.create.content.trains.entity.Train;
 
 import de.mrjulsen.crn.CreateRailwaysNavigator;
@@ -31,25 +29,35 @@ public final class ModTrainStatusInfos {
             return false;
         }
         
-        Optional<Train> occupyingTrain = data.occupyingTrains.stream().findFirst();
-        if (!occupyingTrain.isPresent()) {
+        if (data.occupyingTrains.isEmpty()) {
             return false;
         }
 
-        return TrainListener.data.containsKey(occupyingTrain.get().id) ? !TrainListener.data.get(occupyingTrain.get().id).isDelayed() : false;
+        Train occupyingTrain = null;
+        for (Train t : data.occupyingTrains) {
+            occupyingTrain = t;
+            break;
+        }
+
+        return TrainListener.data.containsKey(occupyingTrain.id) ? !TrainListener.data.get(occupyingTrain.id).isDelayed() : false;
     }));
 
     public static final TrainStatus PERVIOUS_TRAIN_DELAYED = REGISTRY.register("previous_train_delayed", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, (data) -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.delay_other_train"), (data) -> {
         if (!data.isCurrentSectionDelayed() || data.getTrain().navigation.waitingForSignal == null) {
             return false;
-        }
+        }        
         
-        Optional<Train> occupyingTrain = data.occupyingTrains.stream().findFirst();
-        if (!occupyingTrain.isPresent()) {
+        if (data.occupyingTrains.isEmpty()) {
             return false;
         }
 
-        return TrainListener.data.containsKey(occupyingTrain.get().id) ? TrainListener.data.get(occupyingTrain.get().id).isDelayed() : false;
+        Train occupyingTrain = null;
+        for (Train t : data.occupyingTrains) {
+            occupyingTrain = t;
+            break;
+        }
+
+        return TrainListener.data.containsKey(occupyingTrain.id) ? TrainListener.data.get(occupyingTrain.id).isDelayed() : false;
     }));
 
     public static final TrainStatus TRACK_CLOSED = REGISTRY.register("track_closed", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, (data) -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.track_closed"), (data) -> {

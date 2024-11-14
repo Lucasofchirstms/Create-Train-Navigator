@@ -117,7 +117,10 @@ public class StationDisplayData {
         CompoundTag nbt = new CompoundTag();
 
         ListTag stopoversList = new ListTag();
-        stopoversList.addAll(getStopovers().stream().map(x -> StringTag.valueOf(x)).toList());
+        List<String> stations = getStopovers();
+        for (String name : stations) {
+            stopoversList.add(StringTag.valueOf(name));
+        }
 
         nbt.put(NBT_TRAIN, trainData.toNbt());
         nbt.put(NBT_STATION, stationData.toNbt());

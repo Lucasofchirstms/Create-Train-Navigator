@@ -10,8 +10,8 @@ import de.mrjulsen.crn.data.train.ClientTrainStop;
 import de.mrjulsen.crn.data.navigation.ClientRoute;
 import de.mrjulsen.crn.data.navigation.ClientRoutePart;
 import de.mrjulsen.mcdragonlib.client.gui.widgets.DLIconButton;
+import de.mrjulsen.mcdragonlib.client.gui.widgets.DLWidgetContainer;
 import de.mrjulsen.mcdragonlib.client.gui.widgets.IDragonLibWidget;
-import de.mrjulsen.mcdragonlib.client.gui.widgets.WidgetContainer;
 import de.mrjulsen.mcdragonlib.client.render.Sprite;
 import de.mrjulsen.mcdragonlib.client.util.DLWidgetsCollection;
 import de.mrjulsen.mcdragonlib.client.util.Graphics;
@@ -22,7 +22,7 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-public class RoutePartWidget extends WidgetContainer {
+public class RoutePartWidget extends DLWidgetContainer {
 
     private final ClientRoutePart part;
     private final ClientRoute route;
@@ -49,11 +49,6 @@ public class RoutePartWidget extends WidgetContainer {
     }
 
     public void initGui() {
-        children().stream().filter(x -> x instanceof Closeable).forEach(x -> {
-            try {
-                ((Closeable)x).close();
-            } catch (IOException e) {}
-        });
         clearWidgets();
         stackLayoutY = 0;
         stationWidgets.clear();

@@ -31,7 +31,7 @@ public class ClientRoutePart extends RoutePart implements ITrainListenerClient<C
     public static record ListenerNotificationData(ClientRoutePart part, ClientTrainStop trainStop) {}
     public static record QueuedAnnouncementEvent(Runnable callback, ClientTrainStop trainStop) {}
 
-    public static final String EVENT_UPDATE = "update";
+    public static final String EVENT_UPDATE = "update2";
     public static final String EVENT_ANNOUNCE_START = "announce_start";
     public static final String EVENT_ARRIVAL_AT_START = "arrival_at_start";
     public static final String EVENT_DEPARTURE_FROM_START = "departure_at_start";
@@ -66,6 +66,9 @@ public class ClientRoutePart extends RoutePart implements ITrainListenerClient<C
     public ClientRoutePart(UUID sessionId, UUID trainId, List<TrainStop> routeStops, List<TrainStop> allStops) {
         super(sessionId, trainId, routeStops, allStops);
         this.nextStop = getFirstClientStop();
+
+        System.out.println("CREATED " + this);
+
 
         createEvent(EVENT_UPDATE);
         createEvent(EVENT_ANNOUNCE_START);
@@ -155,7 +158,9 @@ public class ClientRoutePart extends RoutePart implements ITrainListenerClient<C
             notifyListeners(EVENT_LAST_STOP_STATION_CHANGED, new ListenerNotificationData(this, x));
         });
 
-        getAllClientStops().stream().forEach(x -> {
+        
+
+        getAllClientStops().forEach(x -> {
             x.listen(ClientTrainStop.EVENT_SCHEDULE_CHANGED, this, a -> {
                 notifyListeners(EVENT_SCHEDULE_CHANGED, new ListenerNotificationData(this, a));
             });
@@ -223,19 +228,25 @@ public class ClientRoutePart extends RoutePart implements ITrainListenerClient<C
 
         MutableSingle<Boolean> shouldRenderStatus = new MutableSingle<>(false);
 
-        getAllClientStops().stream().forEach(x -> {
-            if (data.stationData().containsKey(x.getScheduleIndex())) {
-                x.update(data.stationData().get(x.getScheduleIndex()));
-                if (x.shouldRenderRealTime())  {
-                    shouldRenderStatus.setFirst(true);
+        List<ClientTrainStop> allStops = getAllClientStops();
+        synchronized (allStops) {
+            for (ClientTrainStop stop : allStops) {
+                if (data.stationData().containsKey(stop.getScheduleIndex())) {
+                    stop.update(data.stationData().get(stop.getScheduleIndex()));
+                    if (stop.shouldRenderRealTime())  {
+                        shouldRenderStatus.setFirst(true);
+                    }
                 }
             }
-        });
-        getAllJourneyClientStops().stream().forEach(x -> {
-            if (data.stationData().containsKey(x.getScheduleIndex())) {
-                x.update(data.stationData().get(x.getScheduleIndex()));
+        }
+        List<ClientTrainStop> allJourneyStops = getAllJourneyClientStops();
+        synchronized (allJourneyStops) {
+            for (ClientTrainStop stop : allJourneyStops) {
+                if (data.stationData().containsKey(stop.getScheduleIndex())) {
+                    stop.update(data.stationData().get(stop.getScheduleIndex()));
+                }
             }
-        });
+        }
 
         if (shouldRenderStatus.getFirst() || data.cancelled()) {
             status.addAll(data.statusInfo());
@@ -279,15 +290,23 @@ public class ClientRoutePart extends RoutePart implements ITrainListenerClient<C
 
     @Override
     public void close() {
-        getAllClientStops().stream().forEach(x -> {
-            x.stopListeningAll(this);
-            x.close();
-        });
-        getAllJourneyClientStops().stream().forEach(x -> {
-            x.stopListeningAll(this);
-            x.close();
-        });
+        List<ClientTrainStop> allStops = getAllClientStops();
+        synchronized (allStops) {
+            for (ClientTrainStop stop : allStops) {
+                stop.stopListeningAll(this);
+                stop.close();
+            }
+        }
+        List<ClientTrainStop> allJourneyStops = getAllJourneyClientStops();
+        synchronized (allJourneyStops) {
+            for (ClientTrainStop stop : allJourneyStops) {
+                stop.stopListeningAll(this);
+                stop.close();
+            }
+        }
         stopListeningAll(this);
+        CreateRailwaysNavigator.LOGGER.info("CLOSED " + this);
+
     }
 
 
@@ -301,7 +320,9 @@ public class ClientRoutePart extends RoutePart implements ITrainListenerClient<C
             CompoundTag nbt = new CompoundTag();
             nbt.putUUID(NBT_SESSION_ID, sessionId);
             ListTag status = new ListTag();
-            status.addAll(statusInfo().stream().map(x -> x.toNbt()).toList());
+            for (CompiledTrainStatus s : statusInfo()) {
+                status.add(s.toNbt());
+            }
             nbt.put(NBT_STATUS_INFOS, status);
             nbt.putBoolean(NBT_CANCELLED, cancelled);
 

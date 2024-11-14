@@ -21,14 +21,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.level.Level;
 
-public class TrainJourneySreen extends AbstractNavigatorScreen {
+public class TrainJourneyScreen extends AbstractNavigatorScreen {
 
     private final ClientRoute route;
     private final ClientRoutePart part;
 
     private RouteDetailsViewer viewer;
 
-    public TrainJourneySreen(Screen lastScreen, ClientRoute route, UUID trainId) {
+    public TrainJourneyScreen(Screen lastScreen, ClientRoute route, UUID trainId) {
         super(lastScreen, TextUtils.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".journey_info.title"), BarColor.GOLD);
         this.route = route;
         this.part = route.getClientParts().stream().filter(x -> x.getTrainId().equals(trainId)).findFirst().orElse(route.getFirstClientPart());

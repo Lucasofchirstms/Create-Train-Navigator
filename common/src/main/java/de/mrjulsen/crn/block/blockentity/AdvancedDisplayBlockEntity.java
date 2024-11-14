@@ -29,6 +29,7 @@ import de.mrjulsen.crn.registry.ModAccessorTypes;
 import de.mrjulsen.crn.registry.ModDisplayTypes;
 import de.mrjulsen.mcdragonlib.block.IBERInstance;
 import de.mrjulsen.mcdragonlib.client.ber.IBlockEntityRendererInstance;
+import de.mrjulsen.mcdragonlib.config.ECachingPriority;
 import de.mrjulsen.mcdragonlib.data.Cache;
 import de.mrjulsen.mcdragonlib.data.Pair;
 import de.mrjulsen.mcdragonlib.data.Tripple;
@@ -103,7 +104,7 @@ public class AdvancedDisplayBlockEntity extends SmartBlockEntity implements
     
     // OTHER
     private int syncTicks = REFRESH_FREQUENCY - 1;
-    private final Cache<IBlockEntityRendererInstance<AdvancedDisplayBlockEntity>> renderer = new Cache<>(() -> new AdvancedDisplayRenderInstance(this));
+    private final Cache<IBlockEntityRendererInstance<AdvancedDisplayBlockEntity>> renderer = new Cache<>(() -> new AdvancedDisplayRenderInstance(this), ECachingPriority.ALWAYS);
 
     public final Cache<TrainExitSide> relativeExitDirection = new Cache<>(() -> {        
         if (getCarriageData() == null || !getTrainData().getNextStop().isPresent() || !(getBlockState().getBlock() instanceof AbstractAdvancedDisplayBlock)) {
@@ -517,20 +518,16 @@ public class AdvancedDisplayBlockEntity extends SmartBlockEntity implements
                         prediction.getStationEntryIndex() != data.getNextStop().get().getStationEntryIndex() ||
                         this.trainData.getNextStopExitSide() != data.getNextStopExitSide() ||
                         this.trainData.isWaitingAtStation() != data.isWaitingAtStation()
-                        //(getInfoType() == EDisplayInfo.INFORMATIVE && getDisplayType() == EDisplayType.PASSENGER_INFORMATION && trainData.getNextStop().get().departureTicks() + lastRefreshedTime != data.getNextStop().get().departureTicks() + refreshTime) // It's not clean but it works ... for now
                     ;
                 }
                 boolean outOfService = this.trainData != null && !this.trainData.getTrainData().getId().equals(Constants.ZERO_UUID) && !data.getNextStop().isPresent();
                 if (outOfService) {
                     shouldUpdate = true;
                 }
-                //this.lastRefreshedTime = refreshTime;
                 this.trainData = outOfService ? TrainDisplayData.empty() : data;
                 this.carriageData = new CarriageData(((CarriageContraptionEntity)carriage.entity).carriageIndex, carriage.getAssemblyDirection(), data.isOppositeDirection());
                 this.relativeExitDirection.clear();
                 
-                if (shouldUpdate) {
-                }
                 getRenderer().update(level, pos, state, this, shouldUpdate ? EUpdateReason.LAYOUT_CHANGED : EUpdateReason.DATA_CHANGED);
             });
         }
@@ -555,7 +552,9 @@ public class AdvancedDisplayBlockEntity extends SmartBlockEntity implements
 
         if (getStops() != null && !getStops().isEmpty()) {            
             ListTag list = new ListTag();
-            list.addAll(getStops().stream().map(x -> x.toNbt()).toList());
+            for (StationDisplayData data : getStops()) {
+                list.add(data.toNbt());
+            }
             pTag.put(NBT_TRAIN_STOPS, list);
         }
     }

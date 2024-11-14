@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.Map.Entry;
 import java.util.Map;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 
-import com.google.common.collect.ImmutableMap;
 import com.simibubi.create.content.trains.display.GlobalTrainDisplayData.TrainDeparturePrediction;
 import com.simibubi.create.content.trains.entity.Train;
 
@@ -32,6 +30,7 @@ import de.mrjulsen.crn.data.train.TrainStatus.TrainStatusType;
 import de.mrjulsen.crn.util.IListenable;
 import de.mrjulsen.crn.util.LockedList;
 import de.mrjulsen.mcdragonlib.DragonLib;
+import de.mrjulsen.mcdragonlib.config.ECachingPriority;
 import de.mrjulsen.mcdragonlib.data.Cache;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -65,11 +64,11 @@ public class TrainData implements IListenable<TrainData> {
     private UUID sessionId;
     private final ConcurrentHashMap<Integer, TrainPrediction> predictionsByIndex = new ConcurrentHashMap<>();
     private transient final ConcurrentHashMap<Integer, TrainTravelSection> sectionsByIndex = new ConcurrentHashMap<>();
-    private transient final Cache<TrainTravelSection> defaultSection = new Cache<>(() -> TrainTravelSection.def(this));
+    private transient final Cache<TrainTravelSection> defaultSection = new Cache<>(() -> TrainTravelSection.def(this), ECachingPriority.LOW);
     private transient final List<TrainPrediction> predictionsChronologically = new LockedList<>();
     private transient final Set<Integer> validPredictionEntries = new HashSet<>();
     private transient final Cache<Boolean> isDynamic = new Cache<>(() -> getTrain().runtime.getSchedule().entries.stream().anyMatch(x -> x.conditions.stream().flatMap(y -> y.stream()).anyMatch(y -> y instanceof DynamicDelayCondition c && c.minWaitTicks() < c.totalWaitTicks())));
-
+    
     private int currentScheduleIndex = INVALID;
     private transient int currentTravelSectionIndex = INVALID;
     private transient int lastScheduleIndex = INVALID;
@@ -114,6 +113,45 @@ public class TrainData implements IListenable<TrainData> {
     // temp mem
     private boolean sectionChanged;
     private boolean destinationChanged;
+
+    // Cache
+    private transient final Cache<Set<CompiledTrainStatus>> statusCache = new Cache<>(() -> {
+        Set<CompiledTrainStatus> status = new HashSet<>(currentStatusInfos.size());
+        for (ResourceLocation loc : currentStatusInfos) {
+            status.add(TrainStatus.Registry.getRegisteredStatus().get(loc).compile(this));
+        }
+        return status;
+    }, ECachingPriority.LOW);    
+    private final Cache<Boolean> isDelayedCache = new Cache<>(() -> {
+        for (TrainPrediction pred : predictionsChronologically) {
+            if (pred.isAnyDelayed()) {
+                return true;
+            }
+        }
+        return false;
+    });    
+    private final Cache<Long> highestDeviationCache = new Cache<>(() -> {
+        long max = 0;
+        for (TrainPrediction pred : predictionsByIndex.values()) {
+            long m = Math.max(pred.getArrivalTimeDeviation(), pred.getDepartureTimeDeviation());
+            if (m > max) {
+                max = m;
+            }
+        }
+        return max;
+    });    
+    private final Cache<TrainTravelSection> currentSectionCache = new Cache<>(() -> {
+        return currentTravelSectionIndex < 0 || !hasCustomTravelSections() || !sectionsByIndex.containsKey(currentTravelSectionIndex) ?
+            defaultSection.get() :
+            sectionsByIndex.get(currentTravelSectionIndex)
+        ;
+    });    
+    private final Cache<List<TrainTravelSection>> sectionsCache = new Cache<>(() -> {
+        return sectionsByIndex.isEmpty() ?
+            List.of(defaultSection.get()) :
+            sectionsByIndex.values().stream().sorted((a, b) -> Integer.compare(a.getScheduleIndex(), b.getScheduleIndex())).toList()
+        ;
+    });
     
     /* PLEASE NOTE!
      * Chronologically update order (once every ~5 seconds):
@@ -206,16 +244,13 @@ public class TrainData implements IListenable<TrainData> {
         return isAtStation;
     }
 
-    public TrainTravelSection getCurrentTravelSection() {
-        return currentTravelSectionIndex < 0 || !sectionsByIndex.containsKey(currentTravelSectionIndex) ? defaultSection.get() : sectionsByIndex.get(currentTravelSectionIndex);
-    }
-
     public TrainTravelSection getSectionByIndex(int scheduleIndex) {
         return sectionsByIndex.isEmpty() ? defaultSection.get() : sectionsByIndex.get(scheduleIndex);
     }
 
     public void addTravelSection(TrainTravelSection section) {
         this.sectionsByIndex.put(section.getScheduleIndex(), section);
+        sectionsCache.clear();
     }
 
     public String getCurrentTitle() {
@@ -239,7 +274,7 @@ public class TrainData implements IListenable<TrainData> {
     }
 
     public List<TrainTravelSection> getSections() {
-        return sectionsByIndex.isEmpty() ? List.of(defaultSection.get()) : sectionsByIndex.values().stream().sorted((a, b) -> Integer.compare(a.getScheduleIndex(), b.getScheduleIndex())).toList();
+        return sectionsCache.get();
     }
 
     public TrainTravelSection getSectionForIndex(int anyIndex) {
@@ -273,12 +308,14 @@ public class TrainData implements IListenable<TrainData> {
     }
 
     public void resetPredictions() {
-        predictionsByIndex.values().stream().forEach(x -> x.reset());
+        for (TrainPrediction pred : predictionsByIndex.values()) {
+            pred.reset();
+        }
         lastSectionDelayOffset = 0;
         refreshTimingsCounter = 0;
         resetStatus(true);
         isDynamic.clear();
-        if (CreateRailwaysNavigator.isDebug()) CreateRailwaysNavigator.LOGGER.info(getTrainName() + " has reset their scheduled times.");
+        if (CreateRailwaysNavigator.isDebug() || ModCommonConfig.ADVANCED_LOGGING.get()) CreateRailwaysNavigator.LOGGER.info(getTrainName() + " has reset their scheduled times.");
     }
 
     public void hardResetPredictions() {
@@ -286,7 +323,7 @@ public class TrainData implements IListenable<TrainData> {
     }
 
     public synchronized boolean isDelayed() {
-        return predictionsChronologically.stream().anyMatch(TrainPrediction::isAnyDelayed);
+        return isDelayedCache.get();
     }
 
     public boolean isCurrentSectionDelayed() {
@@ -294,7 +331,7 @@ public class TrainData implements IListenable<TrainData> {
     }
 
     public long getHighestDeviation() {
-        return predictionsByIndex.values().stream().mapToLong(x -> Math.max(x.getArrivalTimeDeviation(), x.getDepartureTimeDeviation())).max().orElse(0);
+        return highestDeviationCache.get();
     }
 
     public long getDeviationDelayOffset() {
@@ -302,15 +339,15 @@ public class TrainData implements IListenable<TrainData> {
     }
 
     public TrainTravelSection getCurrentSection() {
-        return currentTravelSectionIndex < 0 || !hasCustomTravelSections() || !sectionsByIndex.containsKey(currentTravelSectionIndex) ? TrainTravelSection.def(this) : sectionsByIndex.get(currentTravelSectionIndex);
+        return currentSectionCache.get();
     }
 
     public Map<UUID, Integer> getWaitingForSignalsTime() {
-        return ImmutableMap.copyOf(delaysBySignal);
+        return new HashMap<>(delaysBySignal);
     }
 
     public Set<CompiledTrainStatus> getStatus() {
-        return currentStatusInfos.stream().map(x -> TrainStatus.Registry.getRegisteredStatus().get(x).compile(this)).collect(Collectors.toSet());
+        return statusCache.get();
     }
 
     public int debug_statusInfoCount() {
@@ -322,6 +359,7 @@ public class TrainData implements IListenable<TrainData> {
         if (keepPreviousDelays && isDelayed()) {
             currentStatusInfos.add(TrainStatus.DELAY_FROM_PREVIOUS_JOURNEY.getLocation());
         }
+        statusCache.clear();
     }
 
     public void applyStatus() {
@@ -337,12 +375,25 @@ public class TrainData implements IListenable<TrainData> {
             }
         }
 
-        
-        if (currentStatusInfos.stream().noneMatch(x -> TrainStatus.Registry.getRegisteredStatus().get(x).getImportance() == TrainStatusType.DELAY && !x.equals(TrainStatus.DEFAULT_DELAY.getLocation())) && isCurrentSectionDelayed()) {
+        boolean unknownDelayReason = isCurrentSectionDelayed();
+        if (unknownDelayReason) {
+            for (ResourceLocation loc : currentStatusInfos) {
+                if (TrainStatus.Registry.getRegisteredStatus().get(loc).getImportance() == TrainStatusType.DELAY && 
+                    !loc.equals(TrainStatus.DEFAULT_DELAY.getLocation())
+                ) {
+                    unknownDelayReason = false;
+                    break;
+                }
+            }
+        }
+
+        if (unknownDelayReason) {
             currentStatusInfos.add(TrainStatus.DEFAULT_DELAY.getLocation());
         } else {
             currentStatusInfos.remove(TrainStatus.DEFAULT_DELAY.getLocation());
         }
+
+        statusCache.clear();
     }
 
     public boolean hasSectionChanged() {
@@ -354,9 +405,15 @@ public class TrainData implements IListenable<TrainData> {
      * Trains that have not yet been initialized do not yet contain any reliable data to make any predictions.
      */
     public boolean isInitialized() {
-        return !currentTransitTime.isEmpty() &&
-            currentTransitTime.values().stream().noneMatch(x -> x < 0)
-        ;
+        if (currentTransitTime.isEmpty()) {
+            return false;
+        }
+        for (int i : currentTransitTime.values()) {
+            if (i < 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public int debug_initializedStationsCount() {
@@ -394,6 +451,7 @@ public class TrainData implements IListenable<TrainData> {
         sectionChanged = true;
         lastSectionDelayOffset = Math.max(0, getHighestDeviation());
         this.refreshTimingsCounter++;
+        currentSectionCache.clear();
     }
 
     private void clearAll() {      
@@ -408,6 +466,9 @@ public class TrainData implements IListenable<TrainData> {
         currentTransitTime.clear();
         lastScheduleIndex = INVALID;
         hasStarted = false;
+
+        sectionsCache.clear();
+        resetCaches();
     }
 
     /** Called every ~5 seconds */
@@ -467,6 +528,13 @@ public class TrainData implements IListenable<TrainData> {
             initializationFinishTask = false;
             onInitialize();
         }
+
+        resetCaches();
+    }
+
+    private void resetCaches() {
+        isDelayedCache.clear();
+        highestDeviationCache.clear();
     }
 
     /** Called every tick */

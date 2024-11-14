@@ -30,7 +30,7 @@ public class StationDeparturesViewer extends ScrollableWidgetContainer {
         
         scrollBar.setAutoScrollerSize(true);
         scrollBar.setScreenSize(height());
-        scrollBar.updateMaxScroll(0);
+        scrollBar.setMaxScroll(0);
         scrollBar.withOnValueChanged((sb) -> setYScrollOffset(sb.getScrollValue()));
         scrollBar.setStepSize(10);
     }
@@ -55,7 +55,7 @@ public class StationDeparturesViewer extends ScrollableWidgetContainer {
                 contentHeight += (widget.height() + 3);
             }
             contentHeight += 7;
-            scrollBar.updateMaxScroll(contentHeight);
+            scrollBar.setMaxScroll(contentHeight);
         });
     }
 

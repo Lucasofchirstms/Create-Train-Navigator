@@ -1,6 +1,5 @@
 package de.mrjulsen.crn.data.navigation;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -143,7 +142,6 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
     private static final String keyNotificationConnectionCanceled = "gui.createrailwaysnavigator.route_overview.journey_interrupted";
 
     private final Map<String, IdentityHashMap<Object, Consumer<ListenerNotificationData>>> listeners = new HashMap<>();
-    private final Map<NotificationType, Collection<Runnable>> queuedNotifications = new HashMap<>();
 
     private final long id = System.nanoTime();
     private final Map<UUID, ClientRoutePart> listenerIds = new HashMap<>();
@@ -181,8 +179,10 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
         super(parts, realTimeTracker);
         this.currentPart = getFirstClientPart();
 
+        System.out.println("CREATED " + realTimeTracker + ": " + this);
+
         if (!realTimeTracker) return;
-        getClientParts().stream().forEach(x -> listenerIds.put(ClientTrainListener.register(x.getSessionId(), x.getTrainId(), x::update), x));
+        getClientParts().forEach(x -> listenerIds.put(ClientTrainListener.register(x.getSessionId(), x.getTrainId(), x::update), x));
         CRNEventsManager.getEvent(DefaultTrainDataRefreshEvent.class).register(CreateRailwaysNavigator.MOD_ID + "_" + id, this::update);
         addListener();
         
@@ -599,15 +599,10 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
             }
         }
 
-        getConnections().stream().forEach(x -> x.update());
+        for (TransferConnection connection : getConnections()) {
+            connection.update();
+        }
 
-        // process notifications
-        queuedNotifications.entrySet().forEach(x -> {
-            if (x.getValue().isEmpty()) {
-                return;
-            }
-        });
-        queuedNotifications.clear();
         isCancelled.clear();
         resetSpamBlockers();
     }
@@ -633,20 +628,32 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
     
     public void closeAll() {
         listenersCount = 0;
-        listenerIds.entrySet().stream().forEach(x -> ClientTrainListener.unregister(x.getValue().getTrainId(), x.getKey()));
-        getClientParts().stream().forEach(x -> {
-            x.stopListeningAll(this);
-            x.close();
-        });
-        getConnections().stream().forEach(x -> {
-            x.stopListeningAll(this);
-            x.close();
-        });
+        synchronized (listenerIds) {
+            for (Map.Entry<UUID, ClientRoutePart> e : listenerIds.entrySet()) {
+                ClientTrainListener.unregister(e.getValue().getTrainId(), e.getKey());
+            }
+        }
+        List<ClientRoutePart> clientParts = getClientParts();
+        synchronized (clientParts) {
+            for (ClientRoutePart part : clientParts) {
+                part.stopListeningAll(this);
+                part.close();
+            }
+        }
+        List<TransferConnection> connections = getConnections();
+        synchronized (connections) {
+            for (TransferConnection connection : connections) {
+                connection.stopListeningAll(this);
+                connection.close();
+            }
+        }
         stopListeningAll(this);
         CRNEventsManager.getEvent(DefaultTrainDataRefreshEvent.class).unregister(CreateRailwaysNavigator.MOD_ID + "_" + id);
         clearEvents();
         isClosed = true;
         CreateRailwaysNavigator.LOGGER.info("Route listener closed.");
+        System.out.println("CLOSED " + this);
+
     }
 
     public static ClientRoute fromNbt(CompoundTag nbt, boolean realTimeTracker) {
@@ -659,12 +666,6 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
     @Override
     public long timeOrderValue() {
         return getStart().getScheduledDepartureTime();
-    }
-
-    private static enum NotificationType {
-        DELAY,
-        CONNECTION_ENDANGERED,
-        CONNECTION_MISSED
     }
 
     public boolean isClosed() {

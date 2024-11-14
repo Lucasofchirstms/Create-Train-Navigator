@@ -42,7 +42,12 @@ public class Route implements ISaveableNavigatorData {
     }
 
     public Optional<TransferConnection> getConnectionWith(TrainStop stop) {
-        return getConnections().stream().filter(x -> x.getArrivalStation() == stop || x.getDepartureStation() == stop).findFirst();
+        for (TransferConnection connection : getConnections()) {
+            if (connection.getArrivalStation() == stop || connection.getDepartureStation() == stop) {
+                return Optional.ofNullable(connection);
+            }
+        }
+        return Optional.empty();
     }
 
     public RoutePart getFirstPart() {
@@ -109,7 +114,9 @@ public class Route implements ISaveableNavigatorData {
     public CompoundTag toNbt() {
         CompoundTag nbt = new CompoundTag();
         ListTag list = new ListTag();
-        list.addAll(parts.stream().map(x -> x.toNbt()).toList());
+        for (RoutePart part : parts) {
+            list.add(part.toNbt());
+        }
         nbt.put(NBT_PARTS, list);
         return nbt;
     }

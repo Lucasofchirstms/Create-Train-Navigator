@@ -6,7 +6,7 @@ import de.mrjulsen.crn.Constants;
 import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.client.gui.CreateDynamicWidgets;
 import de.mrjulsen.crn.client.gui.CreateDynamicWidgets.ColorShade;
-import de.mrjulsen.crn.client.gui.screen.TrainJourneySreen;
+import de.mrjulsen.crn.client.gui.screen.TrainJourneyScreen;
 import de.mrjulsen.crn.client.lang.ELanguage;
 import de.mrjulsen.crn.util.ModUtils;
 import de.mrjulsen.crn.data.navigation.ClientRoute;
@@ -42,7 +42,7 @@ public class StationDeparturesWidget extends DLButton implements AutoCloseable {
 
     public StationDeparturesWidget(Screen parent, StationDeparturesViewer viewer, int x, int y, int width, ClientRoute route, boolean arrival) {
         super(x, y, width, 32, TextUtils.empty(), (b) -> {
-            DLScreen.setScreen(new TrainJourneySreen(parent, route, route.getStart().getTrainId()));
+            DLScreen.setScreen(new TrainJourneyScreen(parent, route, route.getStart().getTrainId()));
         });
         this.route = route;
         this.arrival = arrival;

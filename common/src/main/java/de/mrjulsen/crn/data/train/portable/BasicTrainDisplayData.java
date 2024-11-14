@@ -112,7 +112,9 @@ public class BasicTrainDisplayData {
         CompoundTag nbt = new CompoundTag();
 
         ListTag statusList = new ListTag();
-        statusList.addAll(status.stream().map(x -> x.toNbt()).toList());
+        for (CompiledTrainStatus s : status) {
+            statusList.add(s.toNbt());
+        }
 
         nbt.putUUID(NBT_ID, id);
         nbt.putString(NBT_NAME, name);

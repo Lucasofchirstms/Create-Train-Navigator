@@ -29,7 +29,7 @@ public class CRNListBox<T, W extends DLButton> extends ScrollableWidgetContainer
         
         scrollBar.setAutoScrollerSize(true);
         scrollBar.setScreenSize(height());
-        scrollBar.updateMaxScroll(0);
+        scrollBar.setMaxScroll(0);
         scrollBar.withOnValueChanged((sb) -> setYScrollOffset(sb.getScrollValue()));
         scrollBar.setStepSize(10);
     }
@@ -52,7 +52,7 @@ public class CRNListBox<T, W extends DLButton> extends ScrollableWidgetContainer
             values.put(widget, entry);
             contentHeight += widget.height();
         }
-        scrollBar.updateMaxScroll(contentHeight);
+        scrollBar.setMaxScroll(contentHeight);
     }
 
     public Set<Entry<W, T>> getEntries() {

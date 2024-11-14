@@ -8,6 +8,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import de.mrjulsen.crn.client.ber.TrainStationClockRenderer;
 import de.mrjulsen.mcdragonlib.block.IBERInstance;
 import de.mrjulsen.mcdragonlib.client.ber.IBlockEntityRendererInstance;
+import de.mrjulsen.mcdragonlib.config.ECachingPriority;
 import de.mrjulsen.mcdragonlib.data.Cache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +20,7 @@ public class TrainStationClockBlockEntity extends SmartBlockEntity implements IB
     private static final String NBT_COLOR = "Color";
     private static final String NBT_GLOWING = "IsGlowing";
 
-    private final Cache<IBlockEntityRendererInstance<TrainStationClockBlockEntity>> renderer = new Cache<>(() -> new TrainStationClockRenderer(this));
+    private final Cache<IBlockEntityRendererInstance<TrainStationClockBlockEntity>> renderer = new Cache<>(() -> new TrainStationClockRenderer(this), ECachingPriority.ALWAYS);
 
     private int color = 0xFFFFFFFF;
     private boolean glowing;

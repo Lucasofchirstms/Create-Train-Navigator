@@ -31,6 +31,7 @@ import de.mrjulsen.mcdragonlib.client.gui.widgets.DLCheckBox;
 import de.mrjulsen.mcdragonlib.client.gui.widgets.DLTooltip;
 import de.mrjulsen.mcdragonlib.client.util.Graphics;
 import de.mrjulsen.mcdragonlib.client.util.GuiUtils;
+import de.mrjulsen.mcdragonlib.config.ECachingPriority;
 import de.mrjulsen.mcdragonlib.core.EAlignment;
 import de.mrjulsen.mcdragonlib.data.Cache;
 import de.mrjulsen.mcdragonlib.util.TextUtils;
@@ -82,7 +83,7 @@ public class AdvancedDisplaySettingsScreen extends DLScreen {
 
     private DLCreateIconButton backButton;
 
-    private final Cache<List<DisplayTypeResourceKey>> displayTypes = new Cache<>(() -> AdvancedDisplaysRegistry.getAllOfTypeAsKey(type));
+    private final Cache<List<DisplayTypeResourceKey>> displayTypes = new Cache<>(() -> AdvancedDisplaysRegistry.getAllOfTypeAsKey(type), ECachingPriority.ALWAYS);
     
     @SuppressWarnings("resource")
     public AdvancedDisplaySettingsScreen(AdvancedDisplayBlockEntity blockEntity) {

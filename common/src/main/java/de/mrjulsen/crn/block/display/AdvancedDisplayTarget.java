@@ -1,5 +1,6 @@
 package de.mrjulsen.crn.block.display;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -13,6 +14,7 @@ import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity;
 import de.mrjulsen.crn.block.properties.EDisplayType.EDisplayTypeDataSource;
 import de.mrjulsen.crn.data.storage.GlobalSettings;
+import de.mrjulsen.crn.data.train.TrainStop;
 import de.mrjulsen.crn.data.train.TrainUtils;
 import de.mrjulsen.crn.data.train.portable.StationDisplayData;
 import de.mrjulsen.crn.event.ModCommonEvents;
@@ -81,7 +83,7 @@ public class AdvancedDisplayTarget extends DisplayBoardTarget {
 
 		String filter = context.sourceConfig().getString("Filter");
 
-		if (context.getTargetBlockEntity() instanceof AdvancedDisplayBlockEntity blockEntity) {
+		if (context.getTargetBlockEntity() instanceof AdvancedDisplayBlockEntity blockEntity && ModCommonEvents.hasServer()) {
 			final AdvancedDisplayBlockEntity controller = blockEntity.getController();
 			long dayTime = context.getTargetBlockEntity().getLevel().getDayTime();
 
@@ -98,16 +100,24 @@ public class AdvancedDisplayTarget extends DisplayBoardTarget {
 						(byte)context.sourceConfig().getInt(AdvancedDisplaySource.NBT_TRAIN_NAME_WIDTH),
 						context.sourceConfig().getByte(AdvancedDisplaySource.NBT_TIME_DISPLAY_TYPE)
 					);
-					if (ModCommonEvents.hasServer()) {
-						ModCommonEvents.getCurrentServer().get().executeIfPossible(controller::sendData);
-					}
+					ModCommonEvents.getCurrentServer().get().executeIfPossible(controller::sendData);
 				}
 			});
 		}
 	}
 
 	public static List<StationDisplayData> prepare(String filter, int maxLines) {
-		return TrainUtils.getDeparturesAtStationName(filter, null).stream().limit(maxLines).map(x -> StationDisplayData.of(x)).toList();
+		List<StationDisplayData> result = new ArrayList<>(maxLines);
+
+		int i = 0;
+		for (TrainStop stop : TrainUtils.getDeparturesAtStationName(filter, null)) {
+			i++;
+			result.add(StationDisplayData.of(stop));
+			if (i >= maxLines) {
+				break;
+			}
+		}
+		return result;
 	}
 
 	@Override

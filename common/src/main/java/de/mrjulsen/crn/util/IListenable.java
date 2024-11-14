@@ -1,7 +1,7 @@
 package de.mrjulsen.crn.util;
 
-import java.util.ArrayList;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -58,12 +58,14 @@ public interface IListenable<T> {
         getListeners().get(name).remove(listenerObject);
     }
     
-    default void stopListeningAll(Object listenerObject) {
-        getListeners().values().stream().forEach(x -> {
+    default void stopListeningAll(Object listenerObject) {        
+        Iterator<IdentityHashMap<Object, Consumer<T>>> iterator = getListeners().values().iterator();
+        while (iterator.hasNext()) {
+            Map<Object, Consumer<T>> x = iterator.next();
             if (x.containsKey(listenerObject)) {
-                x.remove(listenerObject);
+                iterator.remove();
             }
-        });
+        }
     }
 
     default void notifyListeners(String name, T data) {
@@ -71,6 +73,9 @@ public interface IListenable<T> {
             throw new IllegalArgumentException("This listener event does not exist: " + name);
         }
 
-        new ArrayList<>(getListeners().get(name).values()).stream().forEach(x -> x.accept(data));
+        Iterator<Consumer<T>> iterator = getListeners().get(name).values().iterator();
+        while (iterator.hasNext()) {
+            iterator.next().accept(data);
+        }
     }
 }
