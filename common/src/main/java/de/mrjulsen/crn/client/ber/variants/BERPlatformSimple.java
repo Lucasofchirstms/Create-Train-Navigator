@@ -86,7 +86,8 @@ public class BERPlatformSimple implements IBERRenderSubtype<AdvancedDisplayBlock
             if (x.getTrainData().isCancelled()) {
                 text.append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.cancelled2").getString());
             } else if (x.getStationData().isDepartureDelayed()) {
-                text.append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed2", TimeUtils.formatToMinutes(x.getStationData().getDepartureTimeDeviation())).getString());
+                String delay = blockEntity.getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(x.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(x.getStationData().getDepartureTimeDeviation()));
+                text.append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed2", delay).getString());
                 if (x.getTrainData().hasStatusInfo()) {
                     text.append(" ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.reason").getString()).append(x.getTrainData().getStatus().get(0).text());
                 }

@@ -14,6 +14,7 @@ import de.mrjulsen.crn.client.lang.ELanguage;
 import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.data.train.TrainStatus.CompiledTrainStatus;
 import de.mrjulsen.crn.data.train.portable.StationDisplayData;
+import de.mrjulsen.crn.data.train.portable.TrainStopDisplayData;
 import de.mrjulsen.crn.util.ModUtils;
 import de.mrjulsen.mcdragonlib.DragonLib;
 import de.mrjulsen.mcdragonlib.client.ber.BERGraphics;
@@ -146,8 +147,10 @@ public class BERPlatformInformative implements IBERRenderSubtype<AdvancedDisplay
             Collection<Component> content = new ArrayList<>();
             if (preds.get(0).getTrainData().isCancelled()) {
                 content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.cancelled"));
-            } else {                
-                content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed", TimeUtils.formatToMinutes(preds.get(0).getStationData().getDepartureTimeDeviation())));
+            } else {
+                TrainStopDisplayData  displayData = preds.get(0).getStationData();
+                String delay = blockEntity.getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(displayData.getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(displayData.getDepartureTimeDeviation()));
+                content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed", delay));
                 for (CompiledTrainStatus status : preds.get(0).getTrainData().getStatus()) {
                     content.add(status.text());
                 }
