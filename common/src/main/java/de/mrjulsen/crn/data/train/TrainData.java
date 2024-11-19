@@ -260,6 +260,10 @@ public class TrainData implements IListenable<TrainData> {
     public String getTrainName() {
         return train.name.getString();
     }
+    
+    public String getTrainDisplayName() {        
+        return getCurrentSection() == null || getCurrentSection().getTrainLine() == null || getCurrentSection().getTrainLine().getLineName().isEmpty() ? getTrainName() : getCurrentSection().getTrainLine().getLineName();
+    }
 
     public int getCurrentScheduleIndex() {
         return currentScheduleIndex;
@@ -736,5 +740,6 @@ public class TrainData implements IListenable<TrainData> {
     public synchronized void shiftTime(long l) {
         this.destinationReachTime += l;
         predictionsByIndex.values().forEach(x -> x.shiftTime(l));
-    }    
+    }
+
 }

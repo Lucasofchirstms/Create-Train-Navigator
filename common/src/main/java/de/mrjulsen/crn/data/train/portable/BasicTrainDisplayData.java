@@ -61,8 +61,8 @@ public class BasicTrainDisplayData {
         TrainData data = TrainListener.data.get(train);
         return new BasicTrainDisplayData(
             data.getTrainId(),
-            data.getTrainName(),
-            TrainIconType.getDefault(), // TODO
+            data.getTrainDisplayName(),
+            data.getTrain().icon,
             new ArrayList<>(data.getStatus()),
             data.isCancelled()
         );
@@ -78,7 +78,7 @@ public class BasicTrainDisplayData {
         TrainData data = TrainListener.data.get(stop.getTrainId());
         return new BasicTrainDisplayData(
             stop.getTrainId(),
-            stop.getTrainName(),
+            stop.getTrainDisplayName(),
             stop.getTrainIcon(),
             new ArrayList<>(data.getStatus()),
             data.isCancelled()

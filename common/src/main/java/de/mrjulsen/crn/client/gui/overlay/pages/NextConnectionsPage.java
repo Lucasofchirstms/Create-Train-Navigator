@@ -85,7 +85,7 @@ public class NextConnectionsPage extends AbstractRouteDetailsPage {
             TrainStop stop = nextConnections.get(i);
             String terminus = stop.getDisplayTitle();
             GuiUtils.drawString(graphics, font, 5, y, TimeUtils.parseTime(stop.getScheduledDepartureTime(), ModClientConfig.TIME_FORMAT.get()), 0xFFDBDBDB, EAlignment.LEFT, false);
-            GuiUtils.drawString(graphics, font, 5 + timeWidth + spacing, y, GuiUtils.ellipsisString(font, TextUtils.text(stop.getTrainName()), trainNameWidth), 0xFFDBDBDB, EAlignment.LEFT, false);
+            GuiUtils.drawString(graphics, font, 5 + timeWidth + spacing, y, GuiUtils.ellipsisString(font, TextUtils.text(stop.getTrainDisplayName()), trainNameWidth), 0xFFDBDBDB, EAlignment.LEFT, false);
             GuiUtils.drawString(graphics, font, width() - 5, y, stop.getRealTimeStationTag().info().platform(), 0xFFDBDBDB, EAlignment.RIGHT, false);
             int terminusWidth = width() - 10 + timeWidth + trainNameWidth + spacing * 3 - font.width(stop.getRealTimeStationTag().info().platform());
             GuiUtils.drawString(graphics, font, 5 + timeWidth + trainNameWidth + spacing * 2, y, GuiUtils.ellipsisString(font, TextUtils.text(terminus), terminusWidth), 0xFFDBDBDB, EAlignment.LEFT, false);
