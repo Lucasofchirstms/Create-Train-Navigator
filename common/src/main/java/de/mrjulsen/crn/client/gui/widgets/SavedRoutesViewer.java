@@ -67,7 +67,7 @@ public class SavedRoutesViewer extends DLScrollableWidgetContainer {
             if (lastData == null || lastData.dayOrderValue() != d.dayOrderValue()) {
                 Component text;
                 long worldTime = DragonLib.getCurrentWorldTime();
-                long dayDiff = d.dayOrderValue() - (worldTime + DragonLib.DAYTIME_SHIFT) / DragonLib.TICKS_PER_DAY;
+                long dayDiff = d.dayOrderValue() - (worldTime + DragonLib.daytimeShift()) / DragonLib.ticksPerDay();
                 if (d.timeOrderValue() < worldTime) text = TextUtils.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".saved_routes.in_the_past");
                 else if (dayDiff == 0) text = TextUtils.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".saved_routes.today");
                 else if (dayDiff == 1) text = TextUtils.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".saved_routes.tomorrow");

@@ -51,7 +51,7 @@ public class BERPlatformSimple implements IBERRenderSubtype<AdvancedDisplayBlock
     @Override
     public void tick(Level level, BlockPos pos, BlockState state, AdvancedDisplayBlockEntity blockEntity, AdvancedDisplayRenderInstance parent) {
         List<Component> textContent = new ArrayList<>(texts);
-        textContent.add(0, ELanguage.translate(keyTime, TimeUtils.parseTime((int)(blockEntity.getLevel().getDayTime() % DragonLib.TICKS_PER_DAY + DragonLib.DAYTIME_SHIFT), ModClientConfig.TIME_FORMAT.get())));
+        textContent.add(0, ELanguage.translate(keyTime, TimeUtils.parseTime((int)(blockEntity.getLevel().getDayTime() % DragonLib.ticksPerDay() + DragonLib.daytimeShift()), ModClientConfig.TIME_FORMAT.get())));
         MutableComponent txt = TextUtils.concat(textContent);
         label
             .setText(txt)

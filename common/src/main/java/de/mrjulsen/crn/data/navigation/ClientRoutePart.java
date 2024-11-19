@@ -14,7 +14,6 @@ import java.util.HashMap;
 import com.google.common.collect.ImmutableList;
 
 import de.mrjulsen.crn.CreateRailwaysNavigator;
-import de.mrjulsen.crn.config.ModCommonConfig;
 import de.mrjulsen.crn.data.train.ClientTrainStop;
 import de.mrjulsen.crn.data.train.RoutePartProgressState;
 import de.mrjulsen.crn.data.train.TrainStop;

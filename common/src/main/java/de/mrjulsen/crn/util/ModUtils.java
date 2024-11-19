@@ -21,6 +21,8 @@ import net.minecraft.util.Mth;
 
 public class ModUtils {
 
+
+
     private static WebsitePreparableReloadListener websitemanager;
     
     public static float clockHandDegrees(long time, int divisor) {
@@ -28,7 +30,7 @@ public class ModUtils {
     }
 
     public static double calcSpeed(double metersPerTick, ESpeedUnit unit) {
-        return metersPerTick * DragonLib.TPS * unit.getFactor();
+        return metersPerTick * 20 * unit.getFactor(); // TODO: DragonLib minecraftTps() for the game tick rate
     }
 
     public static MutableComponent calcSpeedString(double metersPerTick, ESpeedUnit unit) {
@@ -110,6 +112,6 @@ public class ModUtils {
         if (asETA) {
             return timeRemainingString(time - DragonLib.getCurrentWorldTime());
         }
-        return TimeUtils.parseTime((time + DragonLib.DAYTIME_SHIFT) % DragonLib.TICKS_PER_DAY, ModClientConfig.TIME_FORMAT.get());
+        return TimeUtils.parseTime((time + DragonLib.daytimeShift()) % DragonLib.ticksPerDay(), ModClientConfig.TIME_FORMAT.get());
     }
 }
