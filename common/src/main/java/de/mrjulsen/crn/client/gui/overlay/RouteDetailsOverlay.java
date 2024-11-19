@@ -25,6 +25,7 @@ import de.mrjulsen.crn.data.StationTag.StationInfo;
 import de.mrjulsen.crn.data.navigation.ClientRoute;
 import de.mrjulsen.crn.data.navigation.TransferConnection;
 import de.mrjulsen.crn.registry.ModItems;
+import de.mrjulsen.crn.util.ModUtils;
 import de.mrjulsen.mcdragonlib.DragonLib;
 import de.mrjulsen.mcdragonlib.client.gui.DLOverlayScreen;
 import de.mrjulsen.mcdragonlib.client.gui.DLScreen;
@@ -88,7 +89,7 @@ public class RouteDetailsOverlay extends DLOverlayScreen {
             currentPage = new WelcomePage(this.route);
             String terminus = route.getStart().getDisplayTitle();
             StationInfo info = route.getStart().getRealTimeStationTag().info();
-            setSlidingText(info.platform().isEmpty() ? ELanguage.translate(keyJourneyBegins, route.getStart().getTrainDisplayName(), terminus, TimeUtils.parseTime(route.getStart().getScheduledDepartureTime(), ModClientConfig.TIME_FORMAT.get())) : ELanguage.translate(keyJourneyBeginsWithPlatform, route.getStart().getTrainDisplayName(), terminus, TimeUtils.parseTime(route.getStart().getScheduledDepartureTime(), ModClientConfig.TIME_FORMAT.get()), info.platform()));
+            setSlidingText(info.platform().isEmpty() ? ELanguage.translate(keyJourneyBegins, route.getStart().getTrainDisplayName(), terminus, ModUtils.formatTime(route.getStart().getScheduledDepartureTime(), false)) : ELanguage.translate(keyJourneyBeginsWithPlatform, route.getStart().getTrainDisplayName(), terminus, ModUtils.formatTime(route.getStart().getScheduledDepartureTime(), false), info.platform()));
         }
 
         xPos = LerpedFloat.linear().startWithValue(width / 2 - (ModClientConfig.OVERLAY_SCALE.get() * (GUI_WIDTH / 2)));
