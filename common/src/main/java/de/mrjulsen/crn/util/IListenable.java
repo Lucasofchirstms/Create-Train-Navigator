@@ -4,6 +4,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public interface IListenable<T> {
 
@@ -32,7 +33,7 @@ public interface IListenable<T> {
 
     default int listenersCount(String name) {
         if (!hasEvent(name)) {
-            throw new IllegalArgumentException("This listener event does not exist: " + name);
+                throw new IllegalArgumentException("This listener event does not exist: " + name + ". Valid events are: [" + getListeners().keySet().stream().collect(Collectors.joining(", ")) + "]");
         }
 
         return getListeners().get(name).size();
@@ -44,7 +45,7 @@ public interface IListenable<T> {
     
     default void listen(String name, Object listenerObject, Consumer<T> listener) {
         if (!hasEvent(name)) {
-            throw new IllegalArgumentException("This listener event does not exist: " + name);
+            throw new IllegalArgumentException("This listener event does not exist: " + name + ". Valid events are: [" + getListeners().keySet().stream().collect(Collectors.joining(", ")) + "]");
         }
 
         getListeners().get(name).put(listenerObject, listener);
@@ -52,7 +53,7 @@ public interface IListenable<T> {
     
     default void stopListening(String name, Object listenerObject) {
         if (!hasEvent(name)) {
-            throw new IllegalArgumentException("This listener event does not exist: " + name);
+            throw new IllegalArgumentException("This listener event does not exist: " + name + ". Valid events are: [" + getListeners().keySet().stream().collect(Collectors.joining(", ")) + "]");
         }
 
         getListeners().get(name).remove(listenerObject);
@@ -70,7 +71,7 @@ public interface IListenable<T> {
 
     default void notifyListeners(String name, T data) {
         if (!hasEvent(name)) {
-            throw new IllegalArgumentException("This listener event does not exist: " + name);
+            throw new IllegalArgumentException("This listener event does not exist: " + name + ". Valid events are: [" + getListeners().keySet().stream().collect(Collectors.joining(", ")) + "]");
         }
 
         Iterator<Consumer<T>> iterator = getListeners().get(name).values().iterator();

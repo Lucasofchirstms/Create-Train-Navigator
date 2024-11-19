@@ -64,9 +64,6 @@ public class RoutePartTrainDetailsWidget extends DLWidgetContainer implements Cl
         this.part = part;
         this.container = container;
 
-        System.out.println("TEST B");
-        part.getListeners().forEach((k, v) -> System.out.println(" - REGISTERED EVENTS: " + k));
-
         part.listen(ClientRoutePart.EVENT_UPDATE, this, (data) -> {
             int oldHeight = currentHeight;
             currentHeight = DEFAULT_HEIGHT;
@@ -177,8 +174,6 @@ public class RoutePartTrainDetailsWidget extends DLWidgetContainer implements Cl
 
     @Override
     public void close() {
-        System.out.println("HELLO THERE");
-        //part.stopListeningAll(this);
     }
 
     @Override

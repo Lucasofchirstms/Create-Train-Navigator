@@ -14,6 +14,7 @@ import java.util.HashMap;
 import com.google.common.collect.ImmutableList;
 
 import de.mrjulsen.crn.CreateRailwaysNavigator;
+import de.mrjulsen.crn.config.ModCommonConfig;
 import de.mrjulsen.crn.data.train.ClientTrainStop;
 import de.mrjulsen.crn.data.train.RoutePartProgressState;
 import de.mrjulsen.crn.data.train.TrainStop;
@@ -66,9 +67,6 @@ public class ClientRoutePart extends RoutePart implements ITrainListenerClient<C
     public ClientRoutePart(UUID sessionId, UUID trainId, List<TrainStop> routeStops, List<TrainStop> allStops) {
         super(sessionId, trainId, routeStops, allStops);
         this.nextStop = getFirstClientStop();
-
-        System.out.println("CREATED " + this);
-
 
         createEvent(EVENT_UPDATE);
         createEvent(EVENT_ANNOUNCE_START);

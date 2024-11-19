@@ -255,14 +255,6 @@ public class NavigatorScreen extends AbstractNavigatorScreen {
                 routeViewer.clear();
 
                 DataAccessor.getFromServer(new NavigationData(stationFrom, stationTo, Minecraft.getInstance().player.getUUID()), ModAccessorTypes.NAVIGATE, (routeList) -> {                    
-                    routeList.forEach(x -> {
-                        x.getClientParts().forEach(y -> {
-                            System.out.println("TEST A");
-                            y.getListeners().forEach((k, v) -> System.out.println(" - REGISTERED EVENTS: " + k));
-                        });     
-                    
-                    });
-                    
                     routes.addAll(routeList);
                     routeViewer.displayRoutes(ImmutableList.copyOf(routes));
                     //routeViewer.displayRoutes(routeList);

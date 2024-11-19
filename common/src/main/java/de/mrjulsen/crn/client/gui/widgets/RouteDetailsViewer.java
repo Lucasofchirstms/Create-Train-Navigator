@@ -60,8 +60,6 @@ public class RouteDetailsViewer extends DLScrollableWidgetContainer {
         for (int i = 0; i < parts.size(); i++) {
             ClientRoutePart part = parts.get(i);
             
-        System.out.println("TEST 2");
-        part.getListeners().forEach((k, v) -> System.out.println(" - 2 REGISTERED EVENTS: " + k));
             RoutePartWidget widget = new RoutePartWidget(parent, x(), y() + contentHeight, width(), route, part);
             widget.setShowTrainDetails(showTrainDetails);
             widget.setCanExpandCollapse(canExpandCollapse);

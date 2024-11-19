@@ -67,9 +67,6 @@ public class RouteDetailsScreen extends AbstractNavigatorScreen {
     public RouteDetailsScreen(Screen lastScreen, ClientRoute route) {
         super(lastScreen, TextUtils.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_details.title"), BarColor.GOLD);
         this.route = route;
-        
-        System.out.println("TEST 1");
-        route.getClientParts().forEach(x -> x.getListeners().forEach((k, v) -> System.out.println(" - REGISTERED EVENTS: " + k)));
     }
 
     @Override

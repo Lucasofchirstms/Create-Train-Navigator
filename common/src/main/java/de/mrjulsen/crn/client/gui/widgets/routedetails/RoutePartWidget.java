@@ -1,7 +1,5 @@
 package de.mrjulsen.crn.client.gui.widgets.routedetails;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 

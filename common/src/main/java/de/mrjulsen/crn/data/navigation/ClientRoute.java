@@ -14,6 +14,7 @@ import java.lang.StringBuilder;
 import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.client.ClientWrapper;
 import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.config.ModCommonConfig;
 import de.mrjulsen.crn.data.SavedRoutesManager;
 import de.mrjulsen.crn.data.train.ClientTrainStop;
 import de.mrjulsen.crn.data.train.RoutePartProgressState;
@@ -179,7 +180,7 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
         super(parts, realTimeTracker);
         this.currentPart = getFirstClientPart();
 
-        System.out.println("CREATED " + realTimeTracker + ": " + this);
+        if (ModCommonConfig.ADVANCED_LOGGING.get()) CreateRailwaysNavigator.LOGGER.info("Created new " + this);
 
         if (!realTimeTracker) return;
         getClientParts().forEach(x -> listenerIds.put(ClientTrainListener.register(x.getSessionId(), x.getTrainId(), x::update), x));
@@ -652,7 +653,7 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
         clearEvents();
         isClosed = true;
         CreateRailwaysNavigator.LOGGER.info("Route listener closed.");
-        System.out.println("CLOSED " + this);
+        if (ModCommonConfig.ADVANCED_LOGGING.get()) CreateRailwaysNavigator.LOGGER.info("Closed " + this);
 
     }
 
