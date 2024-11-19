@@ -140,7 +140,7 @@ public class GlobalSettingsScreen extends AbstractNavigatorScreen {
             GuiAreaDefinition workspace = option.getContentSpace();
             DataListContainer<Collection<String>, String> cont = new DataListContainer<>(option, workspace.getX(), workspace.getY(), workspace.getWidth(), datalist,
                 (list) -> {
-                    return list.iterator();
+                    return list.stream().sorted((a, b) -> a.compareToIgnoreCase(b)).iterator();
                 }, (data, entryWidget) -> {
                     entryWidget.addDeleteButton((btn, tg, entry, refreshAction) -> {
                         GlobalSettingsClient.removeStationFromBlacklist(entry, (res) -> {
@@ -187,7 +187,7 @@ public class GlobalSettingsScreen extends AbstractNavigatorScreen {
             GuiAreaDefinition workspace = option.getContentSpace();
             DataListContainer<Collection<String>, String> cont = new DataListContainer<>(option, workspace.getX(), workspace.getY(), workspace.getWidth(), datalist,
                 (list) -> {
-                    return list.iterator();
+                    return list.stream().sorted((a, b) -> a.compareToIgnoreCase(b)).iterator();
                 }, (data, entryWidget) -> {
                     entryWidget.addDeleteButton((btn, tg, entry, refreshAction) -> {
                         GlobalSettingsClient.removeTrainFromBlacklist(entry, (res) -> {
@@ -234,7 +234,7 @@ public class GlobalSettingsScreen extends AbstractNavigatorScreen {
             GuiAreaDefinition workspace = option.getContentSpace();
             DataListContainer<Collection<TrainGroup>, TrainGroup> cont = new DataListContainer<>(option, workspace.getX(), workspace.getY(), workspace.getWidth(), datalist,
                 (list) -> {
-                    return list.iterator();
+                    return list.stream().sorted((a, b) -> a.getGroupName().compareToIgnoreCase(b.getGroupName())).iterator();
                 }, (data, entryWidget) -> {
                     entryWidget.addDeleteButton((btn, tg, entry, refreshAction) -> {
                         GlobalSettingsClient.deleteTrainGroup(entry.getGroupName(), () -> {
@@ -299,7 +299,7 @@ public class GlobalSettingsScreen extends AbstractNavigatorScreen {
             GuiAreaDefinition workspace = option.getContentSpace();
             DataListContainer<Collection<TrainLine>, TrainLine> cont = new DataListContainer<>(option, workspace.getX(), workspace.getY(), workspace.getWidth(), datalist,
                 (list) -> {
-                    return list.iterator();
+                    return list.stream().sorted((a, b) -> a.getLineName().compareToIgnoreCase(b.getLineName())).iterator();
                 }, (data, entryWidget) -> {
                     entryWidget.addDeleteButton((btn, tg, entry, refreshAction) -> {
                         GlobalSettingsClient.deleteTrainLine(entry.getLineName(), () -> {
