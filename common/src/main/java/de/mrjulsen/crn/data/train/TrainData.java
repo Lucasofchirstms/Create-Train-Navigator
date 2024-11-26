@@ -495,7 +495,7 @@ public class TrainData implements IListenable<TrainData> {
     public synchronized void refreshPost() {
 
         // [] Remove invalid prediction data
-        if (hasStarted && !train.runtime.paused) {
+        if (/*TODO hasStarted && */!train.runtime.paused) {
             predictionsByIndex.keySet().retainAll(validPredictionEntries);
             measuredTransitTimes.keySet().retainAll(validPredictionEntries);
             transitTimeHistory.keySet().retainAll(validPredictionEntries);
