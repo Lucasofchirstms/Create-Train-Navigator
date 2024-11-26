@@ -3,7 +3,6 @@ package de.mrjulsen.crn;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 import net.minecraft.server.MinecraftServer;
-
 import java.nio.file.Path;
 
 public class CRNPlatformSpecific {
@@ -35,6 +34,4 @@ public class CRNPlatformSpecific {
     public static void registerConfig() {
         throw new AssertionError();
     }
-
-    
 }

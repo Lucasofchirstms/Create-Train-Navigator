@@ -17,6 +17,8 @@ public class ModCommonConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> USE_CREATE_TRANSIT_TIMES_ON_INIT;
     public static final ForgeConfigSpec.ConfigValue<Boolean> EXCLUDE_TRAINS;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ADVANCED_LOGGING;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> USE_WEBSERVER;
+    public static final ForgeConfigSpec.ConfigValue<Integer> PORT;
 
     static {
         BUILDER.push(CreateRailwaysNavigator.MOD_ID + "_common_config");
@@ -42,11 +44,16 @@ public class ModCommonConfig {
             .defineInRange("train_data_calculation.total_duration_deviation_threshold", 50, 0, 1000);
         SCHEDULE_DEVIATION_THRESHOLD = BUILDER.comment(new String[] {"[in Ticks]", "How many ticks the real-time can deviate from the scheduled time before the train is considered delayed. (Default: 500)"})
             .defineInRange("train_data_calculation.schedule_deviation_threshold", 500, 100, 24000);
-        AUTO_RESET_TIMINGS = BUILDER.comment(new String[] {"[In Cycles]", "(ONLY WORKS FOR TRAINS WITH DYNAMIC DELAYS! Trains without dynamic delays do this every new schedule section by default.)", " ", "Every X cycles the scheduled times are updated to the current real-time data. (Default: 2; Disabled: 0)"})
+        AUTO_RESET_TIMINGS = BUILDER.comment(new String[] {"[in Cycles]", "(ONLY WORKS FOR TRAINS WITH DYNAMIC DELAYS! Trains without dynamic delays do this every new schedule section by default.)", " ", "Every X cycles the scheduled times are updated to the current real-time data. (Default: 2; Disabled: 0)"})
             .defineInRange("train_data_calculation.auto_reset_timings", 2, 0, Integer.MAX_VALUE);
 
         ADVANCED_LOGGING = BUILDER.comment(new String[] {"Prints more details to the console to better observe the behavior of CRN. Only relevant for debugging."})
             .define("debug.advanced_logging", false);
+            
+        USE_WEBSERVER = BUILDER.comment(new String[] {"[Restart Required!]", "Whether the webserver should be started or not. (Default: OFF)"})
+            .define("experimental.use_webserver", false);
+        PORT = BUILDER.comment(new String[] {"The port for the CRN Webserver. (Default: 80)"})
+            .defineInRange("experimental.webserver_port", 80, 1, 65535);
 
         BUILDER.pop();
         SPEC = BUILDER.build();

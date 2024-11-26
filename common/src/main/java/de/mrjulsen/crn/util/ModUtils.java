@@ -96,8 +96,8 @@ public class ModUtils {
         return id;
     }
 
-    public static void setWebsiteResourceManager(WebsitePreparableReloadListener manager) {
-        websitemanager = manager;
+    public static WebsitePreparableReloadListener setWebsiteResourceManager(WebsitePreparableReloadListener manager) {
+        return websitemanager = manager;
     }
 
     public static WebsitePreparableReloadListener getWebsiteResourceManager() {
