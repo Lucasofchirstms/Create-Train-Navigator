@@ -23,6 +23,7 @@ import de.mrjulsen.crn.config.ModCommonConfig;
 import de.mrjulsen.crn.util.ModUtils;
 import de.mrjulsen.crn.event.CRNEventsManager;
 import de.mrjulsen.crn.event.events.TotalDurationTimeChangedEvent;
+import de.mrjulsen.crn.mixin.ScheduleRuntimeAccessor;
 import de.mrjulsen.crn.data.TrainInfo;
 import de.mrjulsen.crn.data.schedule.condition.DynamicDelayCondition;
 import de.mrjulsen.crn.data.train.TrainStatus.CompiledTrainStatus;
@@ -439,7 +440,7 @@ public class TrainData implements IListenable<TrainData> {
 
         // Update CRN predictions with data from Create
         TrainPrediction pred = predictionsByIndex.computeIfAbsent(entryIndex, i -> new TrainPrediction(this, entryIndex, predictionData, stayDuration, minStayDuration));
-        currentTransitTime.computeIfAbsent(entryIndex, x -> -1);
+        currentTransitTime.computeIfAbsent(entryIndex, x -> ModCommonConfig.USE_CREATE_TRANSIT_TIMES_ON_INIT.get() ? ((ScheduleRuntimeAccessor)train.runtime).crn$predictionTicks().get(entryIndex) : INVALID);
         validPredictionEntries.add(entryIndex);
 
         pred.updateRealTime(

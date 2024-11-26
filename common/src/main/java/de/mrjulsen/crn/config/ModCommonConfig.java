@@ -14,6 +14,7 @@ public class ModCommonConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> TRANSFER_COST;
     public static final ForgeConfigSpec.ConfigValue<Integer> TOTAL_DURATION_DEVIATION_THRESHOLD;
     public static final ForgeConfigSpec.ConfigValue<Boolean> CUSTOM_TRANSIT_TIME_CALCULATION;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> USE_CREATE_TRANSIT_TIMES_ON_INIT;
     public static final ForgeConfigSpec.ConfigValue<Boolean> EXCLUDE_TRAINS;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ADVANCED_LOGGING;
 
@@ -33,6 +34,8 @@ public class ModCommonConfig {
 
         CUSTOM_TRANSIT_TIME_CALCULATION = BUILDER.comment("When activated, CRN calculates the transit times of the trains and does not use the calculations from Create. CRN is much more accurate, while Create calculates an average. (Default: ON)")
             .define("train_data_calculation.custom_transit_time_calculation", true);
+        USE_CREATE_TRANSIT_TIMES_ON_INIT = BUILDER.comment("When activated, CRN uses the transit times provided by Create (if available) when initializing. When turned off, the initialization may take longer. (Default: ON)")
+            .define("train_data_calculation.use_create_transit_times_on_init", true);
         TOTAL_DURATION_BUFFER_SIZE = BUILDER.comment(new String[] {"[in Cycles]", "How often the calculated time for a route section between two stations must deviate from the current reference value before the reference value is updated. (Default: 3)"})
             .defineInRange("train_data_calculation.total_duration_deviation_buffer_size", 3, 1, 16);            
         TOTAL_DURATION_DEVIATION_THRESHOLD = BUILDER.comment(new String[] {"[in Ticks]", "Deviations of the calculated time for a route section between two stations from the reference value that are smaller than the threshold value are not taken into account. (Default: 50)"})
