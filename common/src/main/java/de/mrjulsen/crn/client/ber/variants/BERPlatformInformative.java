@@ -118,15 +118,15 @@ public class BERPlatformInformative implements IBERRenderSubtype<AdvancedDisplay
             }
         });
 
+        graphics.poseStack().pushPose();
         if (statusLabel != null && !statusLabel.getText().getString().isBlank()) {
-            graphics.poseStack().pushPose();
-            if (backSide && focusArea != null && platformLabel != null) {                
-                graphics.poseStack().translate(-statusLabel.getX() + 5 + platformLabel.getTextWidth(), 0, 0);
-            }
             DLUtils.doIfNotNull(statusLabel, x -> x.render(graphics, light));
-            graphics.poseStack().popPose();
+        }
+        if (backSide && platformLabel != null) {                
+            graphics.poseStack().translate(-graphics.blockEntity().getXSizeScaled() * 16 + 6 + platformLabel.getTextWidth(), 0, 0);
         }
         platformLabel.render(graphics, light);
+        graphics.poseStack().popPose();
     }
 
     @Override

@@ -88,7 +88,7 @@ public class AdvancedDisplayTarget extends DisplayBoardTarget {
 			long dayTime = context.getTargetBlockEntity().getLevel().getDayTime();
 
 			queueAdvancedDisplayWorkerTask(() -> {
-				if (controller != null & controller.getDisplayTypeKey().category().getSource() == EDisplayTypeDataSource.PLATFORM) {
+				if (controller != null && controller.getDisplayTypeKey().category().getSource() == EDisplayTypeDataSource.PLATFORM) {
 					List<StationDisplayData> preds = prepare(filter, controller.getDisplayTypeInfo().platformDisplayTrainsCount().apply(controller));
 					
 					controller.setDepartureData(

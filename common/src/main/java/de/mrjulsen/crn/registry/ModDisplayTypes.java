@@ -6,6 +6,7 @@ import de.mrjulsen.crn.block.properties.EDisplayType;
 import de.mrjulsen.crn.client.AdvancedDisplaysRegistry;
 import de.mrjulsen.crn.client.AdvancedDisplaysRegistry.DisplayTypeInfo;
 import de.mrjulsen.crn.client.AdvancedDisplaysRegistry.DisplayTypeResourceKey;
+import de.mrjulsen.crn.client.ber.variants.BERDepartureBoardTable;
 import de.mrjulsen.crn.client.ber.variants.BERPassengerInfoInformative;
 import de.mrjulsen.crn.client.ber.variants.BERPassengerInfoSimple;
 import de.mrjulsen.crn.client.ber.variants.BERPlatformDetailed;
@@ -49,6 +50,10 @@ public final class ModDisplayTypes {
     public static final DisplayTypeResourceKey PLATFORM_FOCUS = AdvancedDisplaysRegistry.registerDisplayType(
         EDisplayType.PLATFORM, new ResourceLocation(CreateRailwaysNavigator.MOD_ID, "focus"),
         BERPlatformInformative::new, new DisplayTypeInfo(false, be -> be.getYSize() * 3 - 2));
+        
+    public static final DisplayTypeResourceKey DEPARTURE_BOARD_TABLE = AdvancedDisplaysRegistry.registerDisplayType(
+        EDisplayType.DEPARTURE_BOARD, new ResourceLocation(CreateRailwaysNavigator.MOD_ID, "table"),
+        BERDepartureBoardTable::new, new DisplayTypeInfo(false, be -> be.getYSize() * 3 - 1));
 
     @Deprecated
     public static DisplayTypeResourceKey legacy_getKeyForType(EDisplayType type, EDisplayInfo info) {
