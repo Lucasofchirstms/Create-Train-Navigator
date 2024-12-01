@@ -69,8 +69,8 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
     ;
     private BERLabel[][] lines = new BERLabel[0][];
 
-    private static final BERLabel[] headlines;
-    static {
+    private final BERLabel[] headlines;
+    {
         headlines = new BERLabel[LineComponent.values().length];
 
         headlines[LineComponent.TIME.i()] = new BERLabel()
@@ -169,6 +169,23 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
         }
     }
 
+    private Collection<Component> getStatusInfo(AdvancedDisplayBlockEntity blockEntity, StationDisplayData data) {
+        if (!data.getTrainData().hasStatusInfo() && !data.getStationData().isDepartureDelayed()) {
+            return List.of();
+        }
+        Collection<Component> content = new ArrayList<>();
+        if (data.getTrainData().isCancelled()) {
+            content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_cancelled", data.getTrainData().getName()));
+            return content;
+        }
+        String delay = blockEntity.getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(data.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(data.getStationData().getDepartureTimeDeviation()));
+        content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_delayed", data.getTrainData().getName(), delay));
+        for (CompiledTrainStatus status : data.getTrainData().getStatus()) {
+            content.add(status.text());
+        }
+        return content;
+    }
+
     @Override
     public void update(Level level, BlockPos pos, BlockState state, AdvancedDisplayBlockEntity blockEntity, AdvancedDisplayRenderInstance parent, EUpdateReason reason) {
         List<StationDisplayData> preds = blockEntity.getStops().stream().filter(x -> x.getStationData().getScheduledArrivalTime() < DragonLib.getCurrentWorldTime() + ModClientConfig.DISPLAY_LEAD_TIME.get() && (!x.getTrainData().isCancelled() || DragonLib.getCurrentWorldTime() < x.getStationData().getScheduledDepartureTime() + ModClientConfig.DISPLAY_LEAD_TIME.get())).toList();
@@ -177,17 +194,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
         if (showInfoLine) {
             // Update status label
             this.infoLineText = TextUtils.concat(TextUtils.text("  +++  "), preds.stream().limit(maxLines).filter(x -> x.getTrainData().hasStatusInfo() && x.getStationData().isDepartureDelayed()).flatMap(x -> {
-                Collection<Component> content = new ArrayList<>();
-                if (x.getTrainData().isCancelled()) {
-                    content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_cancelled", x.getTrainData().getName()));
-                    return content.stream();
-                }
-                String delay = blockEntity.getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(x.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(x.getStationData().getDepartureTimeDeviation()));
-                content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_delayed", x.getTrainData().getName(), delay));
-                for (CompiledTrainStatus status : x.getTrainData().getStatus()) {
-                    content.add(status.text());
-                }
-                return content.stream();
+                return getStatusInfo(blockEntity, x).stream();
             }).toArray(Component[]::new));
         } else {
             infoLineText = TextUtils.empty();
@@ -322,7 +329,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
         }
         if (hasInfo) {
             infoLabel
-                .setText(TextUtils.text("TEST"))
+                .setText(TextUtils.concat(TextUtils.text("  +++  "), getStatusInfo(blockEntity, stop)))
             ;
         }
         BERLabel platformLabel = components[LineComponent.PLATFORM.i()]
