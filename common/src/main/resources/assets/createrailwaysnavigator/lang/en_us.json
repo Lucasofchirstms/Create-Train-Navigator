@@ -99,6 +99,7 @@
 
     "gui.createrailwaysnavigator.route_details.title": "Route Details",
     "gui.createrailwaysnavigator.route_details.departure": "Departure in",
+    "gui.createrailwaysnavigator.route_details.arrival": "Arrival in",
     "gui.createrailwaysnavigator.route_details.next_transfer_time": "Transfer in",
     "gui.createrailwaysnavigator.route_details.transfer": "Transfer",
     
