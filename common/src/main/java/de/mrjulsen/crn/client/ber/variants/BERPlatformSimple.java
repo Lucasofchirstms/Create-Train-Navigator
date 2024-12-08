@@ -73,8 +73,9 @@ public class BERPlatformSimple implements IBERRenderSubtype<AdvancedDisplayBlock
         ;
 
         texts = new ArrayList<>();
-        texts.addAll(preds.stream().map(x -> {
-            String timeString = ModUtils.formatTime(x.getStationData().getScheduledDepartureTime(), blockEntity.getTimeDisplay() == ETimeDisplay.ETA);
+        texts.addAll(preds.stream().filter(x -> {
+            return !x.isNextSectionExcluded();
+        }).map(x -> {
 
             MutableComponent text = TextUtils.empty();
             if (x.getStationData().getStationInfo().platform() == null || x.getStationData().getStationInfo().platform().isBlank()) {
