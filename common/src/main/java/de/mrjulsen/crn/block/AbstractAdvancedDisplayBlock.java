@@ -318,7 +318,6 @@ public abstract class AbstractAdvancedDisplayBlock extends Block implements IWre
 
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
-        
         ItemStack heldItem = pPlayer.getItemInHand(pHand);
         AdvancedDisplayBlockEntity blockEntity = ((AdvancedDisplayBlockEntity)pLevel.getBlockEntity(pPos)).getController();
 
@@ -326,9 +325,17 @@ public abstract class AbstractAdvancedDisplayBlock extends Block implements IWre
 			DyeColor dye = dyeItem.getDyeColor();        
 			if (dye != null) {
 				pLevel.playSound(null, pPos, SoundEvents.DYE_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+				int dyeColor = dye == DyeColor.ORANGE ? 0xFFFF9900 : dye.getTextColor();
+				
 				blockEntity.applyToAll(be -> {
-					be.getSettingsAs(BasicDisplaySettings.class).ifPresent(x -> x.setFontColor(dye == DyeColor.ORANGE ? 0xFFFF9900 : dye.getTextColor()));	
-					be.notifyUpdate();
+					be.getSettingsAs(BasicDisplaySettings.class).ifPresent(x -> {
+						if (pPlayer.isShiftKeyDown()) {
+							x.setBackColor(dyeColor);
+						} else {
+							x.setFontColor(dyeColor);
+						}
+						be.notifyUpdate();
+					});
 				});
 
 				if (pLevel.isClientSide) {

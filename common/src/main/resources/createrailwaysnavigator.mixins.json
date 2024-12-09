@@ -15,7 +15,8 @@
     "MountedStorageManagerMixin",
     "ScheduleRuntimeMixin",
     "GlobalTrainDisplayDataMixin",
-    "TrainMixin"
+    "TrainMixin",
+    "ItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1
