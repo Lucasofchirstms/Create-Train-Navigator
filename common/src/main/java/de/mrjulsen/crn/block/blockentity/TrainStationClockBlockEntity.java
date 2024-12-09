@@ -15,7 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class TrainStationClockBlockEntity extends SmartBlockEntity implements IBERInstance<TrainStationClockBlockEntity>, IColorableBlockEntity {
+public class TrainStationClockBlockEntity extends SmartBlockEntity implements IBERInstance<TrainStationClockBlockEntity> {
 
     private static final String NBT_COLOR = "Color";
     private static final String NBT_GLOWING = "IsGlowing";
@@ -37,12 +37,10 @@ public class TrainStationClockBlockEntity extends SmartBlockEntity implements IB
         return renderer.get();
     }
 
-    @Override
     public int getColor() {
         return color;
     }
 
-    @Override
     public boolean isGlowing() {
         return glowing;
     }

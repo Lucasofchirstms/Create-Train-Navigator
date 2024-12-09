@@ -97,6 +97,7 @@ public abstract class AbstractFlyoutWidget<T extends GuiEventListener & Widget &
     @Override
     public void renderMainLayer(Graphics graphics, int mouseX, int mouseY, float partialTicks) {
         graphics.poseStack().pushPose();
+        graphics.poseStack().translate(0, 0, 100);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();

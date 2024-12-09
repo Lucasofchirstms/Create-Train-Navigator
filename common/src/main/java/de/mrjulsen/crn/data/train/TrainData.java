@@ -199,7 +199,7 @@ public class TrainData implements IListenable<TrainData> {
     }
 
     public TrainInfo getTrainInfo(int scheduleIndex) {
-        return new TrainInfo(getSectionForIndex(scheduleIndex).getTrainLine(), getSectionForIndex(scheduleIndex).getTrainGroup());
+        return new TrainInfo(getSectionForIndex(scheduleIndex).getTrainLine2().orElse(null), getSectionForIndex(scheduleIndex).getTrainGroup2().orElse(null));
     }
 
     /**
@@ -263,7 +263,7 @@ public class TrainData implements IListenable<TrainData> {
     }
     
     public String getTrainDisplayName() {        
-        return getCurrentSection() == null || getCurrentSection().getTrainLine() == null || getCurrentSection().getTrainLine().getLineName().isEmpty() ? getTrainName() : getCurrentSection().getTrainLine().getLineName();
+        return getCurrentSection() == null || getCurrentSection().getTrainLine2().map(x -> x.getLineName().isEmpty()).orElse(true) ? getTrainName() : getCurrentSection().getTrainLine2().get().getLineName();
     }
 
     public int getCurrentScheduleIndex() {

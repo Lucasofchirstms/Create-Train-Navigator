@@ -111,12 +111,12 @@ public class TrainTravelSection {
         return usable;
     }
 
-    public TrainGroup getTrainGroup() {
-        return trainGroup;
+    public Optional<TrainGroup> getTrainGroup2() {
+        return Optional.ofNullable(trainGroup);
     }
 
-    public TrainLine getTrainLine() {
-        return trainLine;
+    public Optional<TrainLine> getTrainLine2() {
+        return Optional.ofNullable(trainLine);
     }
 
     public TrainTravelSection nextSection() {

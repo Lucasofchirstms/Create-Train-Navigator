@@ -7,9 +7,9 @@ import java.util.List;
 import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity;
 import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity.EUpdateReason;
-import de.mrjulsen.crn.block.display.AdvancedDisplaySource.ETimeDisplay;
+import de.mrjulsen.crn.block.properties.ETimeDisplay;
+import de.mrjulsen.crn.block.display.properties.DepartureBoardDisplayTableSettings;
 import de.mrjulsen.crn.client.ber.AdvancedDisplayRenderInstance;
-import de.mrjulsen.crn.client.ber.IBERRenderSubtype;
 import de.mrjulsen.crn.client.lang.ELanguage;
 import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.data.train.TrainStatus.CompiledTrainStatus;
@@ -20,6 +20,7 @@ import de.mrjulsen.mcdragonlib.client.ber.BERGraphics;
 import de.mrjulsen.mcdragonlib.client.ber.BERLabel;
 import de.mrjulsen.mcdragonlib.client.ber.BERLabel.BoundsHitReaction;
 import de.mrjulsen.mcdragonlib.client.util.BERUtils;
+import de.mrjulsen.mcdragonlib.util.ColorUtils;
 import de.mrjulsen.mcdragonlib.util.DLUtils;
 import de.mrjulsen.mcdragonlib.util.TextUtils;
 import de.mrjulsen.mcdragonlib.util.TimeUtils;
@@ -31,7 +32,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplayBlockEntity, AdvancedDisplayRenderInstance, Boolean> {
+public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<DepartureBoardDisplayTableSettings> {
 
     private static final String keyDeparture = "gui.createrailwaysnavigator.departure";
     private static final String keyTrain = "gui.createrailwaysnavigator.line";
@@ -46,8 +47,6 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
     private static final float SPACING = 2;
     private static final float TIME_LABEL_MAX_WIDTH = 12;
     private static final float REAL_TIME_LABEL_MAX_WIDTH = 12;
-    private static final float TRAIN_LINE_LABEL_MAX_WIDTH = 16;
-    private static final byte PLATFORM_LABEL_MAX_WIDTH = 16;
 
     private boolean showInfoLine = false;
     private MutableComponent infoLineText = TextUtils.empty();
@@ -142,7 +141,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
     @Override
     public void render(BERGraphics<AdvancedDisplayBlockEntity> graphics, float pPartialTicks, AdvancedDisplayRenderInstance parent, int light, boolean backSide) {
 
-        BERUtils.fillColor(graphics, 2, 1.5f + LINE_HEIGHT, 0.0f, graphics.blockEntity().getXSizeScaled() * 16 - 4, 0.25f, (0xFF << 24) | (graphics.blockEntity().getColor() & 0x00FFFFFF), graphics.blockEntity().getBlockState().getValue(HorizontalDirectionalBlock.FACING), light);
+        BERUtils.fillColor(graphics, 2, 1.5f + LINE_HEIGHT, 0.0f, graphics.blockEntity().getXSizeScaled() * 16 - 4, 0.25f, (0xFF << 24) | (getDisplaySettings(graphics.blockEntity()).getFontColor() & 0x00FFFFFF), graphics.blockEntity().getBlockState().getValue(HorizontalDirectionalBlock.FACING), light);
         if (graphics.blockEntity().getXSizeScaled() < MIN_SIZE) {
             tooSmallLabel.render(graphics, light);
             return;
@@ -155,7 +154,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
         for (int i = 0; i < lines.length && i < maxLines; i++) {
             graphics.poseStack().pushPose();
             if (i % 2 == 1) {
-                BERUtils.fillColor(graphics, 2, 2 + Y_OFFSET + i * LINE_HEIGHT, 0, graphics.blockEntity().getXSizeScaled() * 16 - 4, LINE_HEIGHT, (0x40 << 24) | (graphics.blockEntity().getColor() & 0x00FFFFFF), graphics.blockEntity().getBlockState().getValue(HorizontalDirectionalBlock.FACING));
+                BERUtils.fillColor(graphics, 2, 2 + Y_OFFSET + i * LINE_HEIGHT, 0, graphics.blockEntity().getXSizeScaled() * 16 - 4, LINE_HEIGHT, (0x40 << 24) | (getDisplaySettings(graphics.blockEntity()).getFontColor() & 0x00FFFFFF), graphics.blockEntity().getBlockState().getValue(HorizontalDirectionalBlock.FACING));
                 graphics.poseStack().translate(0, 0, 0.05f);
             }
             for (int k = 0; k < lines[i].length; k++) {
@@ -178,7 +177,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
             content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_cancelled", data.getTrainData().getName()));
             return content;
         }
-        String delay = blockEntity.getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(data.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(data.getStationData().getDepartureTimeDeviation()));
+        String delay = getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(data.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(data.getStationData().getDepartureTimeDeviation()));
         content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_delayed", data.getTrainData().getName(), delay));
         for (CompiledTrainStatus status : data.getTrainData().getStatus()) {
             content.add(status.text());
@@ -188,7 +187,9 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
 
     @Override
     public void update(Level level, BlockPos pos, BlockState state, AdvancedDisplayBlockEntity blockEntity, AdvancedDisplayRenderInstance parent, EUpdateReason reason) {
-        List<StationDisplayData> preds = blockEntity.getStops().stream().filter(x -> x.getStationData().getScheduledArrivalTime() < DragonLib.getCurrentWorldTime() + ModClientConfig.DISPLAY_LEAD_TIME.get() && (!x.getTrainData().isCancelled() || DragonLib.getCurrentWorldTime() < x.getStationData().getScheduledDepartureTime() + ModClientConfig.DISPLAY_LEAD_TIME.get())).toList();
+        List<StationDisplayData> preds = blockEntity.getStops().stream().filter(x -> {
+            return (!x.isNextSectionExcluded() || getDisplaySettings(blockEntity).showArrival()) && (!x.getTrainData().isCancelled() || DragonLib.getCurrentWorldTime() < x.getStationData().getScheduledDepartureTime() + ModClientConfig.DISPLAY_LEAD_TIME.get());
+        }).toList();
         
         showInfoLine = !preds.isEmpty() && preds.get(0).getStationData().isDepartureDelayed() && preds.get(0).getTrainData().hasStatusInfo();
         if (showInfoLine) {
@@ -209,23 +210,25 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
             
         for (int i = 0; i < this.lines.length && i < preds.size(); i++) {
             StationDisplayData stop = preds.get(i);
-            updateContent(blockEntity, stop, i, false, 0, 0);
+            updateContent(blockEntity, stop, i, false, 0, 0, 0);
         }
 
         statusLabel
             .setText(infoLineText)
             .setPos(3, blockEntity.getYSizeScaled() * 16 - 12 * statusLabel.getYScale() - 2)
             .setMaxWidth(blockEntity.getXSizeScaled() * 16 - 6, BoundsHitReaction.SCALE_SCROLL)
+            .setColor(ColorUtils.brightnessDependingFontColor(getDisplaySettings(blockEntity).getFontColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
         ;
     }
 
 
     private void updateLayout(AdvancedDisplayBlockEntity blockEntity, List<StationDisplayData> preds, int maxIndices) {
+        DepartureBoardDisplayTableSettings settings = getDisplaySettings(blockEntity);
 
         if (blockEntity.getXSizeScaled() < MIN_SIZE) {
             tooSmallLabel
                 .setMaxWidth(blockEntity.getXSizeScaled() * 16 - 6, BoundsHitReaction.CUT_OFF)
-                .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+                .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
             ;
             return;
         }
@@ -238,43 +241,44 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
         hTimeLabel
             .setPos(3, hTimeLabel.getY())
             .setMaxWidth(TIME_LABEL_MAX_WIDTH + (!isSmall(blockEntity) ? REAL_TIME_LABEL_MAX_WIDTH : 0) + SPACING, BoundsHitReaction.CUT_OFF)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
         ;
         BERLabel hTrainLabel = headlines[LineComponent.TRAIN_NAME.i()];
         hTrainLabel
             .setPos(hTimeLabel.getX() + hTimeLabel.getMaxWidth() + SPACING, hTrainLabel.getY())
-            .setMaxWidth(TRAIN_LINE_LABEL_MAX_WIDTH, BoundsHitReaction.CUT_OFF)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setMaxWidth(settings.getTrainNameWidth(), BoundsHitReaction.CUT_OFF)
+            .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
         ;        
         BERLabel hPlatformLabel = headlines[LineComponent.PLATFORM.i()];
+        float hPlatformLabelWidth = settings.getPlatformWidth();
         hPlatformLabel
-            .setPos(blockEntity.getXSizeScaled() * 16 - 3 - hPlatformLabel.getTextWidth(), hPlatformLabel.getY())
-            .setMaxWidth(PLATFORM_LABEL_MAX_WIDTH, BoundsHitReaction.CUT_OFF)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setPos(blockEntity.getXSizeScaled() * 16 - 3 - Math.min(hPlatformLabelWidth, hPlatformLabel.getTextWidth()), hPlatformLabel.getY())
+            .setMaxWidth(hPlatformLabelWidth, BoundsHitReaction.CUT_OFF)
+            .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
         ;
         
-        final float remainingSpace = blockEntity.getXSizeScaled() * 16 - 3 - hTrainLabel.getX() - hTrainLabel.getMaxWidth() - platformWidth(blockEntity) - SPACING;
-        final float infoSpace = hasInfo ? remainingSpace / 4 : 0;
-        final float sectionSize = hasStopovers ? (remainingSpace - infoSpace) / 2 : remainingSpace;
-        final float sectionTextSize = sectionSize - SPACING;
+        final float remainingSpace = blockEntity.getXSizeScaled() * 16 - 3 - hTrainLabel.getX() - hTrainLabel.getMaxWidth() - settings.getPlatformWidth() - SPACING; // No *2!
+        final float infoSpace = (remainingSpace * settings.getInfoWidthPercentage()) - SPACING;
+        final float stopoversSpace = (remainingSpace * settings.getStopoversWidthPercentage()) - SPACING;
+        final float destinationSpace = remainingSpace - infoSpace - stopoversSpace - SPACING * 3;
 
         BERLabel hStopoversLabel = headlines[LineComponent.STOPOVERS.i()];
         hStopoversLabel
             .setPos(hasStopovers ? hTrainLabel.getX() + hTrainLabel.getMaxWidth() + SPACING : 0, hStopoversLabel.getY())
-            .setMaxWidth(hasStopovers ? sectionTextSize : 0, BoundsHitReaction.CUT_OFF)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setMaxWidth(hasStopovers ? stopoversSpace : 0, BoundsHitReaction.CUT_OFF)
+            .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
         ;
         BERLabel hDestinationLabel = headlines[LineComponent.DESTINATION.i()];
         hDestinationLabel
             .setPos(hasStopovers ? hStopoversLabel.getX() + hStopoversLabel.getMaxWidth() + SPACING : hTrainLabel.getX() + hTrainLabel.getMaxWidth() + SPACING, hDestinationLabel.getY())
-            .setMaxWidth(Math.min(hDestinationLabel.getX() + (sectionTextSize), blockEntity.getXSizeScaled() * 16 - 3 - hPlatformLabel.getTextWidth() - SPACING) - hDestinationLabel.getX(), BoundsHitReaction.CUT_OFF)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setMaxWidth(Math.min(hDestinationLabel.getX() + (destinationSpace), blockEntity.getXSizeScaled() * 16 - 3 - hPlatformLabel.getTextWidth() - SPACING) - hDestinationLabel.getX(), BoundsHitReaction.CUT_OFF)
+            .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
         ;        
         BERLabel hInfoLabel = headlines[LineComponent.INFO.i()];
         hInfoLabel
             .setPos(hasInfo ? hDestinationLabel.getX() + hDestinationLabel.getMaxWidth() + SPACING : 0, hDestinationLabel.getY())
             .setMaxWidth(hasInfo ? Math.min(hInfoLabel.getX() + (infoSpace - SPACING), blockEntity.getXSizeScaled() * 16 - 3 - hInfoLabel.getX() - hPlatformLabel.getTextWidth() - SPACING) - hInfoLabel.getX() : 0, BoundsHitReaction.CUT_OFF)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
         ;
         
 
@@ -283,33 +287,49 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
         for (int i = 0; i < this.lines.length; i++) {
             StationDisplayData stop = preds.get(i);
             this.lines[i] = createLine(blockEntity, stop, i, hasStopovers, hasInfo);
-            updateContent(blockEntity, stop, i, true, sectionTextSize, infoSpace - SPACING);
+            updateContent(blockEntity, stop, i, true, stopoversSpace, infoSpace, destinationSpace);
         }
         statusLabel
-            .setBackground((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF), true)
+            .setBackground((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF), true)
+            .setColor(ColorUtils.brightnessDependingFontColor(settings.getFontColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
         ;
 
     }
 
-    private void updateContent(AdvancedDisplayBlockEntity blockEntity, StationDisplayData stop, int index, boolean layoutUpdate, float sectionTextSize, float infoLineWidth) {
-        boolean isLast = stop.isLastStop();
+    private void updateContent(AdvancedDisplayBlockEntity blockEntity, StationDisplayData stop, int index, boolean layoutUpdate, float stopoversSize, float infoLineWidth, float destinationWidth) {
+        DepartureBoardDisplayTableSettings settings = getDisplaySettings(blockEntity);
+        boolean isLast = settings.showArrival() && stop.isLastStop();
         BERLabel[] components = lines[index];
 
         BERLabel timeLabel = components[LineComponent.TIME.i()]
-            .setText(TextUtils.text(ModUtils.formatTime(stop.getScheduledTime(), blockEntity.getTimeDisplay() == ETimeDisplay.ETA)))
+            .setText(TextUtils.text(ModUtils.formatTime(stop.getScheduledTime(), settings.getTimeDisplay() == ETimeDisplay.ETA)))
         ;
         BERLabel realTimeLabel = components[LineComponent.REAL_TIME.i()]
             .setText(isSmall(blockEntity) ? 
-                TextUtils.text(ModUtils.formatTime(stop.getScheduledTime(), blockEntity.getTimeDisplay() == ETimeDisplay.ETA)) :
+                TextUtils.text(ModUtils.formatTime(stop.getScheduledTime(), settings.getTimeDisplay() == ETimeDisplay.ETA)) :
                 TextUtils.text(stop.getTrainData().isCancelled() ?
                     " \u274C " : // X
                     (stop.getStationData().isDepartureDelayed() ?
-                        (ModUtils.formatTime(stop.getRealTime(), blockEntity.getTimeDisplay() == ETimeDisplay.ETA)) : 
+                        (ModUtils.formatTime(stop.getRealTime(), settings.getTimeDisplay() == ETimeDisplay.ETA)) : 
                         ""))) // Nothing (not delayed)
+            .setColor(ColorUtils.brightnessDependingFontColor(settings.getFontColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
         ;
         BERLabel trainLabel = components[LineComponent.TRAIN_NAME.i()]
             .setText(TextUtils.text(stop.getTrainData().getName()))
         ;
+
+        if (settings.showLineColor() && stop.getTrainData().hasColor()) {
+            trainLabel
+                .setBackground((0xFF << 24) | (stop.getTrainData().getColor() & 0x00FFFFFF), false)
+                .setColor(ColorUtils.brightnessDependingFontColor(stop.getTrainData().getColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
+            ;
+        } else {
+            trainLabel
+                .setBackground(0, false)
+                .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
+            ;
+        }
+
         BERLabel destinationLabel = components[LineComponent.DESTINATION.i()]
             .setText(isLast ?
                 ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".schedule_board.train_from", stop.getFirstStopName()) :
@@ -330,6 +350,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
         if (hasInfo) {
             infoLabel
                 .setText(TextUtils.concat(TextUtils.text("  +++  "), getStatusInfo(blockEntity, stop)))
+                .setColor(ColorUtils.brightnessDependingFontColor(settings.getFontColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
             ;
         }
         BERLabel platformLabel = components[LineComponent.PLATFORM.i()]
@@ -341,7 +362,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
 
         if (layoutUpdate) {
             platformLabel
-                .setMaxWidth(platformWidth(blockEntity), BoundsHitReaction.SCALE_SCROLL)
+                .setMaxWidth(settings.getPlatformWidth(), BoundsHitReaction.SCALE_SCROLL)
             ;        
             timeLabel
                 .setPos(headlines[LineComponent.TIME.i()].getX(), Y_OFFSET + 3 + index * LINE_HEIGHT)
@@ -354,7 +375,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
             ;
             destinationLabel
                 .setPos(headlines[LineComponent.DESTINATION.i()].getX(), Y_OFFSET + 3 + index * LINE_HEIGHT)
-                .setMaxWidth(sectionTextSize, BoundsHitReaction.SCALE_SCROLL)
+                .setMaxWidth(destinationWidth, BoundsHitReaction.SCALE_SCROLL)
             ;
             platformLabel
                 .setPos(blockEntity.getXSizeScaled() * 16 - 3 - platformLabel.getTextWidth(), Y_OFFSET + 3 + index * LINE_HEIGHT)
@@ -362,7 +383,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
             if (hasTransfers) {                
                 stopoversLabel
                     .setPos(hasTransfers ? headlines[LineComponent.STOPOVERS.i()].getX() : 0, Y_OFFSET + 3 + index * LINE_HEIGHT + 0.5f)
-                    .setMaxWidth(hasTransfers ? sectionTextSize : 0, BoundsHitReaction.SCALE_SCROLL)
+                    .setMaxWidth(hasTransfers ? stopoversSize : 0, BoundsHitReaction.SCALE_SCROLL)
                 ;
             }
             if (hasInfo) {
@@ -382,37 +403,37 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
             .setYScale(0.4f)
             .setMaxWidth(isSmall ? -2 : TIME_LABEL_MAX_WIDTH, BoundsHitReaction.SCALE_SCROLL)
             .setScale(0.4f, 0.2f)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
         ;
         components[LineComponent.REAL_TIME.i()] = new BERLabel()
             .setYScale(0.4f)
             .setMaxWidth(REAL_TIME_LABEL_MAX_WIDTH, BoundsHitReaction.SCALE_SCROLL)
             .setScale(0.4f, 0.2f)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
         ;
         if (!isSmall) {
             components[LineComponent.REAL_TIME.i()]
-                .setBackground((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF), false)
+                .setBackground((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF), false)
                 .setColor(0xFF111111)
             ;
         }
         components[LineComponent.TRAIN_NAME.i()] = new BERLabel()
             .setYScale(0.4f)
             .setScrollingSpeed(2)
-            .setMaxWidth(TRAIN_LINE_LABEL_MAX_WIDTH, BoundsHitReaction.SCALE_SCROLL)
+            .setMaxWidth(getDisplaySettings(blockEntity).getTrainNameWidth(), BoundsHitReaction.SCALE_SCROLL)
             .setScale(0.4f, 0.2f)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
         ;        
         components[LineComponent.PLATFORM.i()] = new BERLabel()
             .setYScale(0.4f)
             .setScale(0.4f, 0.2f)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
         ;
         components[LineComponent.DESTINATION.i()] = new BERLabel()
             .setYScale(0.4f)
             .setScrollingSpeed(2)
             .setScale(0.4f, 0.2f)
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
         ;
 
         if (withStopovers) {
@@ -420,7 +441,7 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
                 .setYScale(0.3f)
                 .setScrollingSpeed(2)
                 .setScale(0.3f, 0.2f)
-                .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+                .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
             ;
         }
         if (withInfo) {
@@ -429,20 +450,15 @@ public class BERDepartureBoardTable implements IBERRenderSubtype<AdvancedDisplay
                 .setScrollingSpeed(2)
                 .setScale(0.4f, 0.2f)
                 .setColor(0xFF111111)
-                .setBackground((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF), true)
+                .setBackground((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF), true)
             ;
         }
 
         return components;
     }
 
-    private static boolean isSmall(AdvancedDisplayBlockEntity blockEntity) {
+    private boolean isSmall(AdvancedDisplayBlockEntity blockEntity) {
         return blockEntity.getXSizeScaled() <= MIN_SIZE;
-    }
-    
-    private static byte platformWidth(AdvancedDisplayBlockEntity blockEntity) {
-        byte w = blockEntity.getPlatformWidth();
-        return w < 0 ? PLATFORM_LABEL_MAX_WIDTH : w;
     }
 
     private static enum LineComponent {

@@ -246,7 +246,7 @@ public class GlobalSettingsScreen extends AbstractNavigatorScreen {
                     DLIconButton colorBtn = entryWidget.addButton(ModGuiIcons.COLOR_PALETTE.getAsSprite(16, 16), textColor,
                     (btn, tg, entry, refreshAction) -> {
                         final TrainGroup e = entry;
-                        FlyoutColorPicker<?> flyout = new FlyoutColorPicker<>(this, e.getColor(), this::addRenderableWidget, (w) -> {
+                        FlyoutColorPicker<?> flyout = new FlyoutColorPicker<>(this, e.getColor(), Constants.DEFAULT_TRAIN_TYPE_COLORS, 5, true, true, this::addRenderableWidget, (w) -> {
                             GlobalSettingsClient.updateTrainGroupColor(e.getGroupName(), ((FlyoutColorPicker<?>)w).getColorPicker().getSelectedColor(), () -> {
                                 GlobalSettingsClient.getTrainGroups((res) -> {
                                     refreshAction.accept(Optional.ofNullable(res));
@@ -311,7 +311,7 @@ public class GlobalSettingsScreen extends AbstractNavigatorScreen {
                     DLIconButton colorBtn = entryWidget.addButton(ModGuiIcons.COLOR_PALETTE.getAsSprite(16, 16), textColor,
                     (btn, tg, entry, refreshAction) -> {
                         final TrainLine e = entry;
-                        FlyoutColorPicker<?> flyout = new FlyoutColorPicker<>(this, e.getColor(), this::addRenderableWidget, (w) -> {
+                        FlyoutColorPicker<?> flyout = new FlyoutColorPicker<>(this, e.getColor(), Constants.DEFAULT_TRAIN_TYPE_COLORS, 5, true, true, this::addRenderableWidget, (w) -> {
                             GlobalSettingsClient.updateTrainLineColor(e.getLineName(), ((FlyoutColorPicker<?>)w).getColorPicker().getSelectedColor(), () -> {
                                 GlobalSettingsClient.getTrainLines((res) -> {
                                     refreshAction.accept(Optional.ofNullable(res));

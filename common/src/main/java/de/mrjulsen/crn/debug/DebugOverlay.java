@@ -87,7 +87,7 @@ public class DebugOverlay extends DLOverlayScreen {
             
             drawLine(graphics, "Sections:");
             for (TrainTravelSection section : data.getSections()) {                
-                drawLine(graphics, " - [ " + section.getScheduleIndex() + " ]: " + section.getDisplayText() + " (" + section.getStartStationName() + " -> " + section.getDestinationStationName() + "), Group: " + (section.getTrainGroup() == null ? "none" : section.getTrainGroup().getGroupName()) + ", Line: " + (section.getTrainLine() == null ? "none" : section.getTrainLine().getLineName()) + ", Include: " + section.shouldIncludeNextStationOfNextSection() + ", Navigable: " + section.isUsable() + ", Next: " + section.nextSection().getScheduleIndex());
+                drawLine(graphics, " - [ " + section.getScheduleIndex() + " ]: " + section.getDisplayText() + " (" + section.getStartStationName() + " -> " + section.getDestinationStationName() + "), Group: " + section.getTrainGroup2().map(x -> x.getGroupName()).orElse("none") + ", Line: " + section.getTrainLine2().map(x -> x.getLineName()).orElse("none") + ", Include: " + section.shouldIncludeNextStationOfNextSection() + ", Navigable: " + section.isUsable() + ", Next: " + section.nextSection().getScheduleIndex());
             }
         }
         drawLine(graphics, TextUtils.text("Press K to switch train.").withStyle(ChatFormatting.AQUA));  

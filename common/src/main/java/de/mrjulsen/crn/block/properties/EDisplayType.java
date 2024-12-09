@@ -44,6 +44,10 @@ public enum EDisplayType implements StringRepresentable, ITranslatableEnum {
 		return Arrays.stream(values()).filter(x -> x.getId() == (byte)id).findFirst().orElse(EDisplayType.TRAIN_DESTINATION);
 	}
 
+	public static EDisplayType getTypeByName(String name) {
+		return Arrays.stream(values()).filter(x -> x.name.equals(name)).findFirst().orElse(EDisplayType.TRAIN_DESTINATION);
+	}
+
     @Override
     public String getSerializedName() {
         return name;
