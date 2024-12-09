@@ -299,6 +299,8 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
     private void updateContent(AdvancedDisplayBlockEntity blockEntity, StationDisplayData stop, int index, boolean layoutUpdate, float stopoversSize, float infoLineWidth, float destinationWidth) {
         DepartureBoardDisplayTableSettings settings = getDisplaySettings(blockEntity);
         boolean isLast = settings.showArrival() && stop.isLastStop();
+        boolean showInfoLine = stop.getStationData().isDepartureDelayed() && stop.getTrainData().hasStatusInfo();
+
         BERLabel[] components = lines[index];
 
         BERLabel timeLabel = components[LineComponent.TIME.i()]
@@ -349,7 +351,7 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
         }
         if (hasInfo) {
             infoLabel
-                .setText(TextUtils.concat(TextUtils.text("  +++  "), getStatusInfo(blockEntity, stop)))
+                .setText(showInfoLine ? TextUtils.concat(TextUtils.text("  +++  "), getStatusInfo(blockEntity, stop)) : TextUtils.empty())
                 .setColor(ColorUtils.brightnessDependingFontColor(settings.getFontColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
             ;
         }
@@ -388,8 +390,8 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
             }
             if (hasInfo) {
                 infoLabel
-                    .setPos(hasInfo ? headlines[LineComponent.INFO.i()].getX() : 0, Y_OFFSET + 3 + index * LINE_HEIGHT)
-                    .setMaxWidth(hasInfo ? infoLineWidth : 0, BoundsHitReaction.SCALE_SCROLL)
+                    .setPos(showInfoLine ? headlines[LineComponent.INFO.i()].getX() : 0, Y_OFFSET + 3 + index * LINE_HEIGHT)
+                    .setMaxWidth(showInfoLine ? infoLineWidth : 0, BoundsHitReaction.SCALE_SCROLL)
                 ;
             }
         }
