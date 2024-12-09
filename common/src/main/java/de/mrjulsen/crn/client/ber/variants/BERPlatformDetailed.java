@@ -173,10 +173,20 @@ public class BERPlatformDetailed implements AbstractAdvancedDisplayRenderer<Plat
                     ""))) // Nothing (not delayed)
             .setColor(ColorUtils.brightnessDependingFontColor(getDisplaySettings(blockEntity).getFontColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
         ;
-        components[LineComponent.TRAIN_NAME.i()]
+        BERLabel trainNameLabel = components[LineComponent.TRAIN_NAME.i()]
             .setText(TextUtils.text(stop.getTrainData().getName()))
-            .setBackground(settings.showLineColor() && stop.getTrainData().hasColor() ? (0xFF << 24) | (stop.getTrainData().getColor() & 0x00FFFFFF) : 0, false)
         ;
+        if (settings.showLineColor() && stop.getTrainData().hasColor()) {
+            trainNameLabel
+                .setBackground((0xFF << 24) | (stop.getTrainData().getColor() & 0x00FFFFFF), false)
+                .setColor(ColorUtils.brightnessDependingFontColor(stop.getTrainData().getColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
+            ;
+        } else {
+            trainNameLabel
+                .setBackground(0, false)
+                .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
+            ;
+        }
         components[LineComponent.PLATFORM.i()]
             .setText(TextUtils.text(stop.getStationData().getStationInfo().platform()))
         ;
@@ -191,8 +201,7 @@ public class BERPlatformDetailed implements AbstractAdvancedDisplayRenderer<Plat
         x += components[LineComponent.TIME.i()].getTextWidth() + 2;
         components[LineComponent.REAL_TIME.i()].setPos(x, 3 + index * LINE_HEIGHT);
         x += components[LineComponent.REAL_TIME.i()].getTextWidth() + 2 + (!components[LineComponent.REAL_TIME.i()].getText().getString().isEmpty() ? 2 : 0);
-        
-        BERLabel trainNameLabel = components[LineComponent.TRAIN_NAME.i()];        
+              
         float trainNameWidth = settings.isAutoTrainNameWidth() ? trainNameLabel.getTextWidth() : settings.getTrainNameWidth();
         trainNameLabel
             .setPos(x, 3 + index * LINE_HEIGHT)

@@ -97,9 +97,9 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
                     } else if (i == LineComponent.TRAIN_NAME.i()) {
                         graphics.poseStack().translate(-label.getX() + maxWidth - 3 - label.getTextWidth(), 0, 0);
                     } else if (i == LineComponent.DESTINATION.i()) {
-                        graphics.poseStack().translate(-label.getX() + 5 + platformLabel.getTextWidth(), 0, 0);
+                        graphics.poseStack().translate(-label.getX() + 5 + platformLabel.getMaxWidth(), 0, 0);
                     } else if (i == LineComponent.STOPOVERS.i()) {
-                        graphics.poseStack().translate(-label.getX() + 5 + platformLabel.getTextWidth(), 0, 0);
+                        graphics.poseStack().translate(-label.getX() + 5 + platformLabel.getMaxWidth(), 0, 0);
                     } else if (i == LineComponent.PLATFORM.i()) {
                         graphics.poseStack().translate(-label.getX() + 3, 0, 0);
                     }
@@ -120,8 +120,14 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
         });
 
         graphics.poseStack().pushPose();
+        
         if (statusLabel != null && !statusLabel.getText().getString().isBlank()) {
+            graphics.poseStack().pushPose();
+            if (backSide) {           
+                graphics.poseStack().translate(-statusLabel.getX() + 5 + platformLabel.getMaxWidth(), 0, 0);
+            }
             DLUtils.doIfNotNull(statusLabel, x -> x.render(graphics, light));
+            graphics.poseStack().popPose();
         }
         if (backSide && platformLabel != null) {                
             graphics.poseStack().translate(-graphics.blockEntity().getXSizeScaled() * 16 + 6 + platformLabel.getTextWidth(), 0, 0);
@@ -322,6 +328,17 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
             .setMaxWidth(settings.isAutoTrainNameWidthNextStop() ? trainNameLabel.getTextWidth() : trainNameWidth, BoundsHitReaction.SCALE_SCROLL)
             .setBackground(settings.showLineColor() && stop.getTrainData().hasColor() ? (0xFF << 24) | (stop.getTrainData().getColor() & 0x00FFFFFF) : 0, false)
         ;
+        if (settings.showLineColor() && stop.getTrainData().hasColor()) {
+            trainNameLabel
+                .setBackground((0xFF << 24) | (stop.getTrainData().getColor() & 0x00FFFFFF), false)
+                .setColor(ColorUtils.brightnessDependingFontColor(stop.getTrainData().getColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
+            ;
+        } else {
+            trainNameLabel
+                .setBackground(0, false)
+                .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
+            ;
+        }
 
         this.platformLabel
             .setText(TextUtils.text(stop.getStationData().getStationInfo().platform()).withStyle(ChatFormatting.BOLD))
@@ -376,10 +393,21 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
                     ""))) // Nothing (not delayed)
             .setColor(ColorUtils.brightnessDependingFontColor(getDisplaySettings(blockEntity).getFontColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
         ;
-        components[LineComponent.TRAIN_NAME.i()]
+        BERLabel trainNameLabel = components[LineComponent.TRAIN_NAME.i()]
             .setText(TextUtils.text(stop.getTrainData().getName()))
             .setBackground(settings.showLineColor() && stop.getTrainData().hasColor() ? (0xFF << 24) | (stop.getTrainData().getColor() & 0x00FFFFFF) : 0, false)
         ;
+        if (settings.showLineColor() && stop.getTrainData().hasColor()) {
+            trainNameLabel
+                .setBackground((0xFF << 24) | (stop.getTrainData().getColor() & 0x00FFFFFF), false)
+                .setColor(ColorUtils.brightnessDependingFontColor(stop.getTrainData().getColor(), LIGHT_FONT_COLOR, DARK_FONT_COLOR))
+            ;
+        } else {
+            trainNameLabel
+                .setBackground(0, false)
+                .setColor((0xFF << 24) | (settings.getFontColor() & 0x00FFFFFF))
+            ;
+        }
         components[LineComponent.PLATFORM.i()]
             .setText(blockEntity.isPlatformFixed() ?
                 TextUtils.empty() :
@@ -397,7 +425,6 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
         components[LineComponent.REAL_TIME.i()].setPos(x, 11 + 3 + index * LINE_HEIGHT);
         x += components[LineComponent.REAL_TIME.i()].getTextWidth() + 2 + (!components[LineComponent.REAL_TIME.i()].getText().getString().isEmpty() ? 2 : 0);
 
-        BERLabel trainNameLabel = components[LineComponent.TRAIN_NAME.i()];
         float trainNameWidth = settings.isAutoTrainNameWidth() ? trainNameLabel.getTextWidth() : settings.getTrainNameWidth();
         trainNameLabel
             .setPos(x, 11 + 3 + index * LINE_HEIGHT)
