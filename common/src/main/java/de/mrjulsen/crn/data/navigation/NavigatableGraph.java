@@ -138,7 +138,7 @@ public class NavigatableGraph {
     protected boolean isPredictionAllowed(TrainPrediction prediction) {
         TrainTravelSection section = prediction.getSection();
         boolean usable = section.isUsable() || (section.isFirstStop(prediction) && section.previousSection().isUsable() && section.previousSection().shouldIncludeNextStationOfNextSection());
-        return !globalSettings().isStationBlacklisted(prediction.getStationName()) && (prediction.getSection().getTrainGroup() == null || !userSettings.navigationExcludedTrainGroups.getValue().contains(prediction.getSection().getTrainGroup().getGroupName())) && usable;
+        return !globalSettings().isStationBlacklisted(prediction.getStationName()) && (prediction.getSection().getTrainGroup2().map(x -> !userSettings.navigationExcludedTrainGroups.getValue().contains(x.getGroupName())).orElse(true)) && usable;
     }
 
     protected Node addNode(TrainPrediction prediction) {

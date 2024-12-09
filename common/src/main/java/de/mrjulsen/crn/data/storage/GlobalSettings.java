@@ -393,7 +393,7 @@ public class GlobalSettings implements INBTSerializable {
         }
 
         for (TrainTravelSection section : TrainListener.data.get(train.id).getSections()) {
-            if (section.isUsable() && !(section.getTrainGroup() != null && settings.navigationExcludedTrainGroups.getValue().contains(section.getTrainGroup().getGroupName()))) {
+            if (section.isUsable() && !(section.getTrainGroup2().map(x -> settings.navigationExcludedTrainGroups.getValue().contains(x.getGroupName())).orElse(false))) {
                 return false;
             }
         }
@@ -401,12 +401,12 @@ public class GlobalSettings implements INBTSerializable {
     }
 
     public boolean isTrainStationExcludedByUser(Train train, TrainPrediction at, UserSettings settings) {
-        return at.getSection().getTrainGroup() != null && (!at.getSection().isUsable() || (at.getSection().getTrainGroup() != null && settings.navigationExcludedTrainGroups.getValue().contains(at.getSection().getTrainGroup().getGroupName())));
+        return at.getSection().getTrainGroup2().map(x -> !at.getSection().isUsable() || (settings.navigationExcludedTrainGroups.getValue().contains(x.getGroupName()))).orElse(false);
     }
 
     public boolean isTrainStationExcludedByUser(Train train, TrainStop at, UserSettings settings) {
         TrainTravelSection section = TrainListener.data.get(train.id).getSectionByIndex(at.getSectionIndex());
-        return section.getTrainGroup() != null && (!section.isUsable() || (section.getTrainGroup() != null && settings.navigationExcludedTrainGroups.getValue().contains(section.getTrainGroup().getGroupName())));
+        return section.getTrainGroup2().map(x -> !section.isUsable() || (settings.navigationExcludedTrainGroups.getValue().contains(x.getGroupName()))).orElse(false);
     }
 
 //#endregion

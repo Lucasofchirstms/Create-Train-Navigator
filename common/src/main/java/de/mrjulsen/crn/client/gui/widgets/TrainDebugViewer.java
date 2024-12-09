@@ -35,11 +35,6 @@ public class TrainDebugViewer extends DLScrollableWidgetContainer {
         return parent;
     }
 
-    @Override
-    protected void clearWidgets() {
-        super.clearWidgets();
-    }
-
     public void reload() {
         clearWidgets();
         contentHeight = 0;

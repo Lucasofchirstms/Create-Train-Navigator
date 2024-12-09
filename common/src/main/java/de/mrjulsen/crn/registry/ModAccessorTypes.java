@@ -796,13 +796,13 @@ public final class ModAccessorTypes {
                             }
 
                             TrainTravelSection section = prediction.getSection();
-                            if ((!section.isUsable() && !(section.isFirstStop(prediction) && section.previousSection().isUsable() && section.previousSection().shouldIncludeNextStationOfNextSection())) || (section.getTrainGroup() != null && settings.searchExcludedTrainGroups.getValue().contains(section.getTrainGroup().getGroupName()))) {
+                            if ((!section.isUsable() && !(section.isFirstStop(prediction) && section.previousSection().isUsable() && section.previousSection().shouldIncludeNextStationOfNextSection())) || (section.getTrainGroup2().map(x -> settings.searchExcludedTrainGroups.getValue().contains(x.getGroupName())).orElse(false))) {
                                 continue;
                             }
 
                             TrainTravelSection previousSection = section.previousSection();
                             boolean isStart = section.isFirstStop(prediction); 
-                            boolean isStartAndFinal = isStart && previousSection.isUsable() && previousSection.shouldIncludeNextStationOfNextSection() && (previousSection.getTrainGroup() == null || !settings.searchExcludedTrainGroups.getValue().contains(previousSection.getTrainGroup().getGroupName())); 
+                            boolean isStartAndFinal = isStart && previousSection.isUsable() && previousSection.shouldIncludeNextStationOfNextSection() && (previousSection.getTrainGroup2().map(x -> !settings.searchExcludedTrainGroups.getValue().contains(x.getGroupName())).orElse(true)); 
                             
                             TrainStop stop = new TrainStop(prediction);
                             stop.simulateTicks(settings.searchDepartureInTicks.getValue());
@@ -811,7 +811,7 @@ public final class ModAccessorTypes {
 
                             Route route = new Route(List.of(new RoutePart(data.getSessionId(), train.id, List.of(stop /* current/target */, from /* from */), section.getAllStops(settings.searchDepartureInTicks.getValue(), prediction.getEntryIndex()))), false);
                             
-                            if ((!isStart || isStartAndFinal) && (section.getTrainGroup() == null || !settings.searchExcludedTrainGroups.getValue().contains(section.getTrainGroup().getGroupName()))) {
+                            if ((!isStart || isStartAndFinal) && (section.getTrainGroup2().map(x -> !settings.searchExcludedTrainGroups.getValue().contains(x.getGroupName())).orElse(true))) {
                                 
                                 Route selectedRoute = route;
                                 if (isStartAndFinal) {                                    
@@ -821,7 +821,7 @@ public final class ModAccessorTypes {
                                 }
                                 routesL.add(Pair.of(true, selectedRoute)); // Arrival
                             }
-                            if ((section.isUsable()) && (section.getTrainGroup() == null || !settings.searchExcludedTrainGroups.getValue().contains(section.getTrainGroup().getGroupName()))) {
+                            if ((section.isUsable()) && (section.getTrainGroup2().map(x -> !settings.searchExcludedTrainGroups.getValue().contains(x.getGroupName())).orElse(true))) {
                                 routesL.add(Pair.of(false, route)); // Departure
                             }
                         }

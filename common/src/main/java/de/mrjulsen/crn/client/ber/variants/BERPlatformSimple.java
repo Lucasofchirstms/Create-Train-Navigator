@@ -6,9 +6,9 @@ import java.util.List;
 import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity;
 import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity.EUpdateReason;
-import de.mrjulsen.crn.block.display.AdvancedDisplaySource.ETimeDisplay;
+import de.mrjulsen.crn.block.properties.ETimeDisplay;
+import de.mrjulsen.crn.block.display.properties.PlatformDisplayScrollingTextSettings;
 import de.mrjulsen.crn.client.ber.AdvancedDisplayRenderInstance;
-import de.mrjulsen.crn.client.ber.IBERRenderSubtype;
 import de.mrjulsen.crn.client.lang.ELanguage;
 import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.data.train.portable.StationDisplayData;
@@ -25,7 +25,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class BERPlatformSimple implements IBERRenderSubtype<AdvancedDisplayBlockEntity, AdvancedDisplayRenderInstance, Boolean> {
+public class BERPlatformSimple implements AbstractAdvancedDisplayRenderer<PlatformDisplayScrollingTextSettings> {
 
     private static final String keyTrainDeparture = "gui.createrailwaysnavigator.route_overview.notification.journey_begins";
     private static final String keyTrainDepartureWithPlatform = "gui.createrailwaysnavigator.route_overview.notification.journey_begins_with_platform";
@@ -68,7 +68,7 @@ public class BERPlatformSimple implements IBERRenderSubtype<AdvancedDisplayBlock
         List<StationDisplayData> preds = blockEntity.getStops().stream().filter(x -> x.getStationData().getScheduledArrivalTime() < DragonLib.getCurrentWorldTime() + ModClientConfig.DISPLAY_LEAD_TIME.get() && (!x.getTrainData().isCancelled() || DragonLib.getCurrentWorldTime() < x.getStationData().getScheduledDepartureTime() + ModClientConfig.DISPLAY_LEAD_TIME.get())).toList();
         
         label
-            .setColor((0xFF << 24) | (blockEntity.getColor() & 0x00FFFFFF))
+            .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
             .setMaxWidth(blockEntity.getXSizeScaled() * 16 - 6, BoundsHitReaction.SCALE_SCROLL)
         ;
 
@@ -76,7 +76,7 @@ public class BERPlatformSimple implements IBERRenderSubtype<AdvancedDisplayBlock
         texts.addAll(preds.stream().filter(x -> {
             return !x.isNextSectionExcluded();
         }).map(x -> {
-
+            String timeString = ModUtils.formatTime(x.getStationData().getScheduledDepartureTime(), getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA);
             MutableComponent text = TextUtils.empty();
             if (x.getStationData().getStationInfo().platform() == null || x.getStationData().getStationInfo().platform().isBlank()) {
                 text.append(ELanguage.translate(keyTrainDeparture, x.getTrainData().getName(), x.getStationData().getDestination(), timeString));
@@ -87,7 +87,7 @@ public class BERPlatformSimple implements IBERRenderSubtype<AdvancedDisplayBlock
             if (x.getTrainData().isCancelled()) {
                 text.append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.cancelled2").getString());
             } else if (x.getStationData().isDepartureDelayed()) {
-                String delay = blockEntity.getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(x.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(x.getStationData().getDepartureTimeDeviation()));
+                String delay = getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(x.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(x.getStationData().getDepartureTimeDeviation()));
                 text.append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed2", delay).getString());
                 if (x.getTrainData().hasStatusInfo()) {
                     text.append(" ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.reason").getString()).append(x.getTrainData().getStatus().get(0).text());

@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 public class BasicTrainDisplayData {
     private final UUID id;
     private final String name;
+    private final int color;
     private final TrainIconType icon;
     private final List<CompiledTrainStatus> status;
     private final boolean cancelled;
@@ -29,25 +30,28 @@ public class BasicTrainDisplayData {
     private static final String NBT_ID = "Id";
     private static final String NBT_NAME = "Name";
     private static final String NBT_ICON = "Icon";
+    private static final String NBT_COLOR = "Color";
     private static final String NBT_STATUS = "Status";
     private static final String NBT_CANCELLED = "Cancelled";
 
     public BasicTrainDisplayData(
         UUID id,
         String name,
+        int color,
         TrainIconType icon,
         List<CompiledTrainStatus> status,
         boolean cancelled
     ) {
         this.id = id;
         this.name = name;
+        this.color = color;
         this.icon = icon;
         this.status = status;
         this.cancelled = cancelled;
     }
 
     public static BasicTrainDisplayData empty() {
-        return new BasicTrainDisplayData(new UUID(0, 0), "", TrainIconType.getDefault(), List.of(), true);
+        return new BasicTrainDisplayData(new UUID(0, 0), "", 0, TrainIconType.getDefault(), List.of(), true);
     }
 
     /** Server-side only! */
@@ -62,6 +66,7 @@ public class BasicTrainDisplayData {
         return new BasicTrainDisplayData(
             data.getTrainId(),
             data.getTrainDisplayName(),
+            data.getCurrentSection().getTrainLine2().map(x -> x.getColor()).orElse(0),
             data.getTrain().icon,
             new ArrayList<>(data.getStatus()),
             data.isCancelled()
@@ -79,6 +84,7 @@ public class BasicTrainDisplayData {
         return new BasicTrainDisplayData(
             stop.getTrainId(),
             stop.getTrainDisplayName(),
+            data.getSectionForIndex(stop.getScheduleIndex()).getTrainLine2().map(x -> x.getColor()).orElse(0),
             stop.getTrainIcon(),
             new ArrayList<>(data.getStatus()),
             data.isCancelled()
@@ -105,6 +111,14 @@ public class BasicTrainDisplayData {
         return cancelled;
     }
 
+    public int getColor() {
+        return color;
+    }
+
+    public boolean hasColor() {
+        return color != 0;
+    }
+
     public boolean hasStatusInfo() {
         return !getStatus().isEmpty();
     }
@@ -119,6 +133,7 @@ public class BasicTrainDisplayData {
         nbt.putUUID(NBT_ID, id);
         nbt.putString(NBT_NAME, name);
         nbt.putString(NBT_ICON, icon.getId().toString());
+        nbt.putInt(NBT_COLOR, color);
         nbt.put(NBT_STATUS, statusList);
         nbt.putBoolean(NBT_CANCELLED, cancelled);
         return nbt;
@@ -128,6 +143,7 @@ public class BasicTrainDisplayData {
         return new BasicTrainDisplayData(
             nbt.getUUID(NBT_ID),
             nbt.getString(NBT_NAME), 
+            nbt.getInt(NBT_COLOR),
             TrainIconType.byId(new ResourceLocation(nbt.getString(NBT_ICON))),
             nbt.getList(NBT_STATUS, Tag.TAG_COMPOUND).stream().map(x -> CompiledTrainStatus.fromNbt(((CompoundTag)x))).toList(),
             nbt.getBoolean(NBT_CANCELLED)

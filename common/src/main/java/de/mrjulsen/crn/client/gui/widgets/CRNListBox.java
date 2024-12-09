@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import de.mrjulsen.mcdragonlib.client.gui.widgets.DLAbstractScrollBar;
 import de.mrjulsen.mcdragonlib.client.gui.widgets.DLButton;
@@ -38,13 +38,14 @@ public class CRNListBox<T, W extends DLButton> extends DLScrollableWidgetContain
         return parent;
     }
 
-    public void displayData(List<T> data, Function<T, W> createItem) {
+    public void displayData(List<T> data, BiFunction<T, Integer, W> createItem) {
         clearWidgets();
         values.clear();
         contentHeight = 0;
         for (int i = 0; i < data.size(); i++) {
             T entry = data.get(i);
-            W widget = createItem.apply(entry);
+            W widget = createItem.apply(entry, i);
+            if (widget == null) continue;
             widget.set_x(x());
             widget.set_width(width());
             widget.set_y(y() + contentHeight);        
