@@ -320,7 +320,7 @@
     "display.createrailwaysnavigator.platform.running_text": "Scrolling Text",
     "display.createrailwaysnavigator.platform.table": "Table",
     "display.createrailwaysnavigator.platform.focus": "Focus",
-    "display.createrailwaysnavigator.departure_board.table": "Departure Table",
+    "display.createrailwaysnavigator.departure_board.table": "Table",
 
     "gui.createrailwaysnavigator.saved_routes.title": "Saved Routes",
     "gui.createrailwaysnavigator.schedule_board.title": "Schedule Board",

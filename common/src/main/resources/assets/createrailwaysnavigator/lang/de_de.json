@@ -320,7 +320,7 @@
     "display.createrailwaysnavigator.platform.running_text": "Lauftext",
     "display.createrailwaysnavigator.platform.table": "Tabelle",
     "display.createrailwaysnavigator.platform.focus": "Fokussiert",
-    "display.createrailwaysnavigator.departure_board.table": "Abfahrtstabelle",
+    "display.createrailwaysnavigator.departure_board.table": "Tabelle",
 
     "gui.createrailwaysnavigator.saved_routes.title": "Gespeicherte Reisen",
     "gui.createrailwaysnavigator.schedule_board.title": "Abfahrtenliste",
