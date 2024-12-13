@@ -33,6 +33,7 @@ public class Constants {
     public static final String GITHUB_WIKI = "https://github.com/MisterJulsen/Create-Train-Navigator/wiki/";
     public static final String HELP_PAGE_ADVANCED_DISPLAYS = GITHUB_WIKI + "Advanced-Displays";
     public static final String HELP_PAGE_DYNAMIC_DELAYS = GITHUB_WIKI + "Dynamic-Delays";
+    public static final String HELP_PAGE_TRAIN_SEPARATION = GITHUB_WIKI + "Train-Separation";
     public static final String HELP_PAGE_GLOBAL_SETTINGS = GITHUB_WIKI + "Global-Settings";
     public static final String HELP_PAGE_NAVIGATION_WARNING = GITHUB_WIKI + "Navigation-Warning";
     public static final String HELP_PAGE_SCHEDULE_SECTIONS = GITHUB_WIKI + "Train-Schedule-Sections";

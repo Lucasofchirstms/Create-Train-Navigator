@@ -63,4 +63,6 @@ public class ResetTimingsInstruction extends ScheduleInstruction implements ISta
     @Override
     public void predict(TrainData data, ScheduleRuntime runtime, int indexInSchedule, Train train) {
     }
+
+    
 }

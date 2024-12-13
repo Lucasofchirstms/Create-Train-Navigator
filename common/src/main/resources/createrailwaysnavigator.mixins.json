@@ -16,7 +16,11 @@
     "ScheduleRuntimeMixin",
     "GlobalTrainDisplayDataMixin",
     "TrainMixin",
-    "ItemMixin"
+    "ItemMixin",
+    "NavigationMixin",
+    "StationBlockEntityMixin",
+
+    "ScheduleEntryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

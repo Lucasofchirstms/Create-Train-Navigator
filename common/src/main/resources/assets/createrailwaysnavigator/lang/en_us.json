@@ -276,6 +276,15 @@
     "enum.createrailwaysnavigator.time_display.eta": "ETA",
     "enum.createrailwaysnavigator.time_display.info.eta": "ETA (estimated time of arrival)",
 
+    "enum.createrailwaysnavigator.train_filter": "Train Filter",
+    "enum.createrailwaysnavigator.train_filter.description": "Compares trains based on the selected criterion to decide which trains should be taken into account.",
+    "enum.createrailwaysnavigator.train_filter.any": "Any train",
+    "enum.createrailwaysnavigator.train_filter.info.any": "Every train is taken into account here.",
+    "enum.createrailwaysnavigator.train_filter.same_line": "Same Line",
+    "enum.createrailwaysnavigator.train_filter.info.same_line": "Only trains with the same train line are taken into account.",
+    "enum.createrailwaysnavigator.train_filter.same_group": "Same Group",
+    "enum.createrailwaysnavigator.train_filter.info.same_group": "Only trains with the same train group are taken into account.",
+
     "create.display_source.advanced_display": "Advanced Displays",
     "gui.createrailwaysnavigator.display_source.advanced_display.train_name_width": "Train Name Width",
     "gui.createrailwaysnavigator.display_source.advanced_display.train_name_width_next": "Train Name Width (Next departure)",
@@ -301,16 +310,28 @@
     "createrailwaysnavigator.schedule.condition.dynamic_delay.min_duration": "Minimum Duration",
     "createrailwaysnavigator.schedule.condition.dynamic_delay.title": "Wait: %s..%s",
     "createrailwaysnavigator.schedule.condition.dynamic_delay.at_least": "or at least %s",
+
+    "createrailwaysnavigator.schedule.condition.train_separation.settings": "Train Separation Settings",
+    "createrailwaysnavigator.schedule.condition.train_separation": "Train Separation",
+    "createrailwaysnavigator.schedule.condition.train_separation.title": "Separation: %s",
+    "createrailwaysnavigator.schedule.condition.train_separation.description": "Departure %s after:",
     
+    "createrailwaysnavigator.schedule.instruction.configure": "Configure...",
     "createrailwaysnavigator.schedule.instruction.travel_section": "New Schedule Section",
     "createrailwaysnavigator.schedule.instruction.travel_section.description": "Beginning of a new schedule section.",
-    "createrailwaysnavigator.schedule.instruction.travel_section.configure": "Configure...",
     "createrailwaysnavigator.schedule.instruction.travel_section.train_group": " - Set Train Group: ",
     "createrailwaysnavigator.schedule.instruction.travel_section.train_line": " - Set Train Line: ",
     "createrailwaysnavigator.schedule.instruction.travel_section.include_previous_station": " - Include start of next section: ",
     "createrailwaysnavigator.schedule.instruction.travel_section.usable": " - Navigable: ",
 
     "createrailwaysnavigator.schedule.instruction.reset_timings": "Reset Timings",
+
+    "goggles.createrailwaysnavigator.train_listener.departures.title": "Departure History",
+    "goggles.createrailwaysnavigator.train_listener.departures.any": "Last departure:",
+    "goggles.createrailwaysnavigator.train_listener.departures.line": "Departures by Train Line:",
+    "goggles.createrailwaysnavigator.train_listener.departures.group": "Departures by Train Group:",
+    "goggles.createrailwaysnavigator.train_listener.departures.nothing": "(No recent departures)",
+    "goggles.createrailwaysnavigator.train_listener.departures.has_more": "+ %s more...",
 
     "display.createrailwaysnavigator.train_destination.simple": "Compact",
     "display.createrailwaysnavigator.train_destination.extended": "Extended",

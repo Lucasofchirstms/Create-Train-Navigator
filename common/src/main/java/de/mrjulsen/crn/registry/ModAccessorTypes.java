@@ -38,6 +38,7 @@ import de.mrjulsen.crn.data.train.TrainStop;
 import de.mrjulsen.crn.data.train.TrainTravelSection;
 import de.mrjulsen.crn.data.train.TrainUtils;
 import de.mrjulsen.crn.data.train.ClientTrainStop.TrainStopRealTimeData;
+import de.mrjulsen.crn.data.train.StationDepartureHistory.StationStats;
 import de.mrjulsen.crn.data.train.portable.NextConnectionsDisplayData;
 import de.mrjulsen.crn.data.train.portable.TrainDisplayData;
 import de.mrjulsen.crn.debug.TrainDebugData;
@@ -942,6 +943,19 @@ public final class ModAccessorTypes {
                 TrainListener.data.get(in).hardResetPredictions();
             }
             return false;
+        }
+    ));
+    
+    public static final DataAccessorType<String, StationStats, StationStats> GET_STATION_DEPARTURE_HISTORY = DataAccessorType.register(new ResourceLocation(CreateRailwaysNavigator.MOD_ID, "get_station_departure_history"), DataAccessorType.Builder.create(
+        (in, nbt) -> {
+            nbt.putString(DataAccessorType.DEFAULT_NBT_DATA, in);
+        }, (nbt) -> {
+            return nbt.getString(DataAccessorType.DEFAULT_NBT_DATA);
+        }, (player, in, temp, nbt, iteration) -> {
+            nbt.put(DataAccessorType.DEFAULT_NBT_DATA, new StationStats(in).toNbt());
+            return false;
+        }, (hasMore, data, iteration, nbt) -> {
+            return StationStats.fromNbt(nbt.getCompound(DataAccessorType.DEFAULT_NBT_DATA));
         }
     ));
 

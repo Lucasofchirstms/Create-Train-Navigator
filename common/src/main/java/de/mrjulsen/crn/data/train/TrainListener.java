@@ -9,10 +9,12 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
+
 import java.util.Set;
 
 import com.simibubi.create.content.trains.entity.Train;
 import de.mrjulsen.crn.CreateRailwaysNavigator;
+import de.mrjulsen.crn.data.schedule.INavigationExtension;
 import de.mrjulsen.crn.data.storage.GlobalSettings;
 import de.mrjulsen.crn.event.CRNEventsManager;
 import de.mrjulsen.crn.event.ModCommonEvents;
@@ -32,7 +34,7 @@ import net.minecraft.world.level.storage.LevelResource;
 
 /** Monitors all trains in the world and processes their data and information to make it available for use. */
 public final class TrainListener {
-    
+
     private transient static final String FILENAME = CreateRailwaysNavigator.MOD_ID + "_train_data.nbt";
 
     public static final ConcurrentHashMap<UUID /* train id */, TrainData> data = new ConcurrentHashMap<>();
@@ -45,7 +47,10 @@ public final class TrainListener {
     public static void init() {
         // Register Event Listeners
         CRNEventsManager.getEvent(GlobalTrainDisplayDataRefreshEventPre.class).register(CreateRailwaysNavigator.MOD_ID, () -> {
-            queueTrainListenerTask(TrainListener::refreshPre);
+            queueTrainListenerTask(() -> {
+                StationDepartureHistory.cleanUpDepartureHistory();
+                TrainListener.refreshPre();
+            });
         });
 
         CRNEventsManager.getEvent(GlobalTrainDisplayDataRefreshEventPost.class).register(CreateRailwaysNavigator.MOD_ID, () -> {
@@ -68,6 +73,11 @@ public final class TrainListener {
                     } else {
                         data.get(train.id).leaveDestination();
                     }
+                }
+
+                if (!isArrival && !((INavigationExtension)(Object)train.navigation).isDelayedWaitConditionPending()) {
+                    // If not checking whether a delayed condition is pending, the train would block itself.
+                    StationDepartureHistory.updateDepartureHistory(train, station.name);
                 }
             });
         });

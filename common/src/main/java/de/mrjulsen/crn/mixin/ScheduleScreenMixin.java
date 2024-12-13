@@ -2,7 +2,6 @@ package de.mrjulsen.crn.mixin;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.spongepowered.asm.mixin.Mixin;
 import com.simibubi.create.content.trains.schedule.IScheduleInput;
 import com.simibubi.create.content.trains.schedule.ScheduleScreen;
@@ -28,6 +27,7 @@ public class ScheduleScreenMixin {
     public int getTopPos() {
         return ((AbstractContainerScreen<?>)(Object)this).topPos;
     }
+
 
     /*
     @SuppressWarnings("resource")

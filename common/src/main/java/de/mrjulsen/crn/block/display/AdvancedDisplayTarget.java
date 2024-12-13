@@ -81,14 +81,13 @@ public class AdvancedDisplayTarget extends DisplayBoardTarget {
 			return;
 		}
 
-		String filter = context.sourceConfig().getString("Filter");
-
 		if (context.getTargetBlockEntity() instanceof AdvancedDisplayBlockEntity blockEntity && ModCommonEvents.hasServer()) {
 			final AdvancedDisplayBlockEntity controller = blockEntity.getController();
 			long dayTime = context.getTargetBlockEntity().getLevel().getDayTime();
 
 			queueAdvancedDisplayWorkerTask(() -> {
 				if (controller != null && controller.getDisplayType().category().getSource() == EDisplayTypeDataSource.PLATFORM) {
+					String filter = context.sourceConfig().getString("Filter");
 					List<StationDisplayData> preds = prepare(filter, controller.getDisplayProperties().platformDisplayTrainsCount().apply(controller));
 					
 					controller.setDepartureData(
@@ -96,9 +95,6 @@ public class AdvancedDisplayTarget extends DisplayBoardTarget {
 						filter,
 						GlobalSettings.getInstance().getOrCreateStationTagFor(filter).getInfoForStation(filter),
 						dayTime
-						//(byte)context.sourceConfig().getInt(AdvancedDisplaySource.NBT_PLATFORM_WIDTH),
-						//(byte)context.sourceConfig().getInt(AdvancedDisplaySource.NBT_TRAIN_NAME_WIDTH),
-						//context.sourceConfig().getByte(AdvancedDisplaySource.NBT_TIME_DISPLAY_TYPE)
 					);
 					ModCommonEvents.getCurrentServer().get().executeIfPossible(controller::sendData);
 				}

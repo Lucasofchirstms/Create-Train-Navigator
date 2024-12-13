@@ -276,6 +276,15 @@
     "enum.createrailwaysnavigator.time_display.eta": "ETA",
     "enum.createrailwaysnavigator.time_display.info.eta": "ETA (Geschätzte Ankunftszeit)",
 
+    "enum.createrailwaysnavigator.train_filter": "Zugfilter",
+    "enum.createrailwaysnavigator.train_filter.description": "Vergleicht Züge basierend auf das ausgewählte Kriterium, um zu entscheiden, welche Züge berücksichtigt werden sollen.",
+    "enum.createrailwaysnavigator.train_filter.any": "Beliebiger Zug",
+    "enum.createrailwaysnavigator.train_filter.info.any": "Jeder Zug wird hier berücksichtigt.",
+    "enum.createrailwaysnavigator.train_filter.same_line": "Gleiche Linie",
+    "enum.createrailwaysnavigator.train_filter.info.same_line": "Nut Züge mit der gleichen Zuglinie werden berücksichtigt.",
+    "enum.createrailwaysnavigator.train_filter.same_group": "Gleiche Kategorie",
+    "enum.createrailwaysnavigator.train_filter.info.same_group": "Nur Züge mit der gleichen Zugkategorie werden berücksichtigt.",
+
     "create.display_source.advanced_display": "Verbesserte Anzeige",
     "gui.createrailwaysnavigator.display_source.advanced_display.train_name_width": "Zugname Spaltenbreite",
     "gui.createrailwaysnavigator.display_source.advanced_display.train_name_width_next": "Zugname Breite (Nächste Abfahrt)",
@@ -302,15 +311,27 @@
     "createrailwaysnavigator.schedule.condition.dynamic_delay.title": "Warte: %s..%s",
     "createrailwaysnavigator.schedule.condition.dynamic_delay.at_least": "oder mindestens %s",
 
+    "createrailwaysnavigator.schedule.condition.train_separation.settings": "Zugverteilung Einstellungen",
+    "createrailwaysnavigator.schedule.condition.train_separation": "Zugverteilung",
+    "createrailwaysnavigator.schedule.condition.train_separation.title": "Trennung: %s",
+    "createrailwaysnavigator.schedule.condition.train_separation.description": "Abfahrt %s nach:",
+
+    "createrailwaysnavigator.schedule.instruction.configure": "Konfigurieren...",
     "createrailwaysnavigator.schedule.instruction.travel_section": "Neuer Fahrplanabschnitt",
     "createrailwaysnavigator.schedule.instruction.travel_section.description": "Anfang eines neuen Fahrplanabschnitts.",
-    "createrailwaysnavigator.schedule.instruction.travel_section.configure": "Konfigurieren...",
     "createrailwaysnavigator.schedule.instruction.travel_section.train_group": " - Setze Zugkategorie: ",
     "createrailwaysnavigator.schedule.instruction.travel_section.train_line": " - Setze Zuglinie: ",
     "createrailwaysnavigator.schedule.instruction.travel_section.include_previous_station": " - Start des nächsten Bereichs einbinden: ",
     "createrailwaysnavigator.schedule.instruction.travel_section.usable": " - Navigierbar: ",
 
-    "createrailwaysnavigator.schedule.instruction.reset_timings": "Zeiten zurücksetzen",
+    "createrailwaysnavigator.schedule.instruction.reset_timings": "Zeiten zurücksetzen",    
+
+    "goggles.createrailwaysnavigator.train_listener.departures.title": "Abfahrtverlauf",
+    "goggles.createrailwaysnavigator.train_listener.departures.any": "Letzte Abfahrt:",
+    "goggles.createrailwaysnavigator.train_listener.departures.line": "Abfahrt Zuglinie:",
+    "goggles.createrailwaysnavigator.train_listener.departures.group": "Abfahrt Zugkategorie:",
+    "goggles.createrailwaysnavigator.train_listener.departures.nothing": "(Kürzlich keine Abfahrten)",
+    "goggles.createrailwaysnavigator.train_listener.departures.has_more": "+ %s weitere...",
 
     "display.createrailwaysnavigator.train_destination.simple": "Kompakt",
     "display.createrailwaysnavigator.train_destination.extended": "Erweitert",
@@ -323,7 +344,7 @@
     "display.createrailwaysnavigator.departure_board.table": "Tabelle",
 
     "gui.createrailwaysnavigator.saved_routes.title": "Gespeicherte Reisen",
-    "gui.createrailwaysnavigator.schedule_board.title": "Abfahrtenliste",
+    "gui.createrailwaysnavigator.schedule_board.title": "Abfahrtsliste",
     "gui.createrailwaysnavigator.station_tags.title": "Bahnhof-Tags",
     "gui.createrailwaysnavigator.journey_info.title": "Reiseinformation",
     "gui.createrailwaysnavigator.journey_info.date": "Tag %s",

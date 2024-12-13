@@ -337,7 +337,7 @@ public class AdvancedDisplayBlockEntity extends SmartBlockEntity implements
 			}
 
 			BlockEntity found = level.getBlockEntity(pos);
-			if (found instanceof AdvancedDisplayBlockEntity flap && flap.isController)
+			if (found instanceof AdvancedDisplayBlockEntity flap && flap.isController())
 				return flap;
 
 			break;
@@ -350,7 +350,7 @@ public class AdvancedDisplayBlockEntity extends SmartBlockEntity implements
 			}
 
 			BlockEntity found = level.getBlockEntity(pos);
-			if (found instanceof AdvancedDisplayBlockEntity flap && flap.isController)
+			if (found instanceof AdvancedDisplayBlockEntity flap && flap.isController())
 				return flap;
 
 			break;

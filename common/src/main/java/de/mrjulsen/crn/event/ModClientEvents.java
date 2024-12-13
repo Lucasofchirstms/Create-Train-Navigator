@@ -7,10 +7,10 @@ import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.config.ModCommonConfig;
 import de.mrjulsen.crn.data.SavedRoutesManager;
 import de.mrjulsen.crn.data.navigation.ClientTrainListener;
+import de.mrjulsen.crn.data.train.StationDepartureHistory;
 import de.mrjulsen.crn.event.events.DefaultTrainDataRefreshEvent;
 import de.mrjulsen.crn.event.events.RouteDetailsActionsEvent;
 import de.mrjulsen.crn.network.InstanceManager;
-import de.mrjulsen.crn.registry.ModBlocks;
 import de.mrjulsen.crn.registry.ModDisplayTags;
 import de.mrjulsen.crn.registry.ModExtras;
 import de.mrjulsen.mcdragonlib.client.OverlayManager;
@@ -81,8 +81,9 @@ public class ModClientEvents {
 
         ClientGuiEvent.DEBUG_TEXT_LEFT.register((texts) -> {
             if (ModCommonConfig.ADVANCED_LOGGING.get()) {
-                texts.add(String.format("CRN | RL: %s",
-                    ClientTrainListener.debug_registeredListenersCount()
+                texts.add(String.format("CRN | RL: %s, %s",
+                    ClientTrainListener.debug_registeredListenersCount(),
+                    StationDepartureHistory.debug_departureHistory()
                 ));
             }
         });
