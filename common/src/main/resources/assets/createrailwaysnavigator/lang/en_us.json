@@ -254,11 +254,11 @@
     "enum.createrailwaysnavigator.display_type": "Display Type",
     "enum.createrailwaysnavigator.display_type.description": "The type of your display which depends on their purpose.",
     "enum.createrailwaysnavigator.display_type.train_destination": "Train Destination",
-    "enum.createrailwaysnavigator.display_type.info.train_destination": "Inteded to be used outside of trains as it shows information about the train itself such as the name, destination and (if selected) stopovers and other information.",
+    "enum.createrailwaysnavigator.display_type.info.train_destination": "Intended to be used outside of trains as it shows information about the train itself such as the name, destination and (if selected) stopovers and other information.",
     "enum.createrailwaysnavigator.display_type.passenger_information": "Passenger Information",
     "enum.createrailwaysnavigator.display_type.info.passenger_information": "Represents the displays found inside of trains. These displays will show the next stop, the exit direction and (if selected) train speed and a route overview.",
     "enum.createrailwaysnavigator.display_type.platform": "Platform Display",
-    "enum.createrailwaysnavigator.display_type.info.platform": "These displays should be used on train station platforms and shows the next ariving trains with additional details if selected. Cannot be used in trains!",
+    "enum.createrailwaysnavigator.display_type.info.platform": "These displays should be used on train station platforms and shows the next arriving trains with additional details if selected. Cannot be used in trains!",
     "enum.createrailwaysnavigator.display_type.departure_board": "Departure Board",
     "enum.createrailwaysnavigator.display_type.info.departure_board": "A summary of all trains departing from a station.",
     
