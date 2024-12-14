@@ -18,12 +18,14 @@ import de.mrjulsen.crn.client.gui.ModGuiIcons;
 import de.mrjulsen.crn.client.gui.NavigatorToast;
 import de.mrjulsen.crn.client.gui.screen.AdvancedDisplaySettingsScreen;
 import de.mrjulsen.crn.client.gui.screen.NavigatorScreen;
+import de.mrjulsen.crn.client.gui.screen.TrainSeparationSettingsScreen;
 import de.mrjulsen.crn.client.gui.screen.TrainDebugScreen;
 import de.mrjulsen.crn.client.gui.screen.TrainSectionSettingsScreen;
 import de.mrjulsen.crn.client.gui.widgets.ResizableButton;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.data.schedule.condition.DynamicDelayCondition;
+import de.mrjulsen.crn.data.schedule.condition.TrainSeparationCondition;
 import de.mrjulsen.crn.data.schedule.instruction.ResetTimingsInstruction;
 import de.mrjulsen.crn.data.schedule.instruction.TravelSectionInstruction;
 import de.mrjulsen.crn.mixin.ModularGuiLineBuilderAccessor;
@@ -53,7 +55,7 @@ import net.minecraft.world.level.Level;
 
 public class ClientWrapper {
     
-    private static ELanguage currentLanguage;
+    private static CustomLanguage currentLanguage;
     private static Language currentClientLanguage;
     
     public static void showNavigatorGui() {
@@ -73,14 +75,14 @@ public class ClientWrapper {
         DLScreen.setScreen(new AdvancedDisplaySettingsScreen(blockEntity));
     }
 
-    public static void updateLanguage(ELanguage lang, boolean force) {
+    public static void updateLanguage(CustomLanguage lang, boolean force) {
         if (currentLanguage == lang && !force) {
             return;
         }
 
-        LanguageInfo info = lang == ELanguage.DEFAULT ? null : Minecraft.getInstance().getLanguageManager().getLanguage(lang.getCode());
+        LanguageInfo info = lang == CustomLanguage.DEFAULT ? null : Minecraft.getInstance().getLanguageManager().getLanguage(lang.getCode());
         currentLanguage = lang;
-        if (lang == ELanguage.DEFAULT || info == null) {
+        if (lang == CustomLanguage.DEFAULT || info == null) {
             currentClientLanguage = Language.getInstance();
             CreateRailwaysNavigator.LOGGER.info("Updated custom language to: (Default)");
         } else {
@@ -122,7 +124,7 @@ public class ClientWrapper {
         
         ModularGuiLineBuilderAccessor accessor = (ModularGuiLineBuilderAccessor)builder;
 
-        ResizableButton btn = new ResizableButton(accessor.crn$getX(), accessor.crn$getY() - 4, 121, 16, TextUtils.translate(CreateRailwaysNavigator.MOD_ID + ".schedule.instruction." + instruction.getId().getPath() + ".configure"), 
+        ResizableButton btn = new ResizableButton(accessor.crn$getX(), accessor.crn$getY() - 4, 121, 16, TextUtils.translate(CreateRailwaysNavigator.MOD_ID + ".schedule.instruction.configure"), 
         (b) -> {
             if (Minecraft.getInstance().screen instanceof ScheduleScreen scheduleScreen) {
                 ((ScheduleScreenAccessor)scheduleScreen).crn$getOnEditorClose().accept(true);
@@ -194,5 +196,59 @@ public class ClientWrapper {
             }
         };
 		accessor.crn$getTarget().add(Pair.of(btn, "help_btn"));
+    }
+
+    @SuppressWarnings("resource")
+    public static void initTimingAdjustmentGui(TrainSeparationCondition condition, ModularGuiLineBuilder builder) {
+        
+        /*
+		builder.addScrollInput(0, 26, (i, l) -> {
+			i.titled(Lang.translateDirect("generic.duration"))
+				.withShiftStep(15)
+				.withRange(0, 121);
+			i.lockedTooltipX = -15;
+			i.lockedTooltipY = 35;
+		}, "Value");		
+
+		builder.addSelectionScrollInput(26, 15, (i, l) -> {
+			i.forOptions(TimeUnit.translatedOptions())
+				.titled(Lang.translateDirect("generic.timeUnit"))
+                .format((idx) -> {
+                    return TextUtils.text(switch (TimeUnit.values()[idx]) {
+                        case MINUTES -> "m";
+                        case SECONDS -> "s";
+                        default -> "t";
+                    });
+                })
+            ;
+		}, "TimeUnit");
+
+		builder.addSelectionScrollInput(41, 80, (i, l) -> {
+			i.forOptions(Arrays.stream(ETrainFilter.values()).map(x -> TextUtils.translate(x.getValueTranslationKey(CreateRailwaysNavigator.MOD_ID))).toList())
+			    .titled(TextUtils.translate(ETrainFilter.ANY.getEnumTranslationKey(CreateRailwaysNavigator.MOD_ID)))
+                .addHint(TextUtils.translate(ETrainFilter.ANY.getEnumDescriptionTranslationKey(CreateRailwaysNavigator.MOD_ID)))
+                
+            ;
+		}, "TrainFilter");
+        */
+
+        ModularGuiLineBuilderAccessor accessor = (ModularGuiLineBuilderAccessor)builder;
+        ResizableButton btn = new ResizableButton(accessor.crn$getX(), accessor.crn$getY() - 4, 121, 16, TextUtils.translate(CreateRailwaysNavigator.MOD_ID + ".schedule.instruction.configure"), 
+        (b) -> {
+            if (Minecraft.getInstance().screen instanceof ScheduleScreen scheduleScreen) {
+                ((ScheduleScreenAccessor)scheduleScreen).crn$getOnEditorClose().accept(true);
+                builder.customArea(0, 0).speechBubble();
+                Minecraft.getInstance().setScreen(new TrainSeparationSettingsScreen(scheduleScreen, condition.getData()));
+            }
+        }) {
+            @Override
+            public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+                Graphics graphics = new Graphics(poseStack);
+				DynamicGuiRenderer.renderArea(graphics, x, y, width, height, AreaStyle.GRAY, isActive() ? (isFocused() || isMouseOver(mouseX, mouseY) ? ButtonState.SELECTED : ButtonState.BUTTON) : ButtonState.DISABLED);
+                int j = isActive() ? DragonLib.NATIVE_BUTTON_FONT_COLOR_ACTIVE : DragonLib.NATIVE_BUTTON_FONT_COLOR_DISABLED;
+                GuiUtils.drawString(graphics, Minecraft.getInstance().font, x + width / 2, y + (height - 8) / 2, this.getMessage(), j, EAlignment.CENTER, true);
+            }
+        };
+		accessor.crn$getTarget().add(Pair.of(btn, "config_btn"));
     }
 }

@@ -39,7 +39,6 @@ public class CRNPlatformSpecific {
         throw new AssertionError();
     }
 
-
     @ExpectPlatform
     public static GlobalStation getStationFromBlockEntity(BlockEntity be) {
         throw new AssertionError();
