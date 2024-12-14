@@ -148,15 +148,15 @@ public final class StationDepartureHistory {
             if (TrainListener.data.containsKey(train.id)) {
                 TrainData trainData = TrainListener.data.get(train.id);
                 TrainTravelSection section = trainData.getCurrentSection();
-                section.getTrainLine2().ifPresent(x -> this.lastDepartureByLine.put(x, this.lastDepartureTime));
-                section.getTrainGroup2().ifPresent(x -> this.lastDepartureByGroup.put(x, this.lastDepartureTime));                
+                section.getTrainLine().ifPresent(x -> this.lastDepartureByLine.put(x, this.lastDepartureTime));
+                section.getTrainGroup().ifPresent(x -> this.lastDepartureByGroup.put(x, this.lastDepartureTime));                
             }
         }
 
         public long getLastDepartureTime(ETrainFilter filter, @Nullable TrainTravelSection section) {
             return switch (filter) {
-                case SAME_GROUP -> section != null ? section.getTrainGroup2().map(x -> lastDepartureByGroup.getOrDefault(x, Long.MIN_VALUE)).orElse(Long.MIN_VALUE) : Long.MIN_VALUE;
-                case SAME_LINE -> section != null ? section.getTrainLine2().map(x -> lastDepartureByLine.getOrDefault(x, Long.MIN_VALUE)).orElse(Long.MIN_VALUE) : Long.MIN_VALUE;
+                case SAME_GROUP -> section != null ? section.getTrainGroup().map(x -> lastDepartureByGroup.getOrDefault(x, Long.MIN_VALUE)).orElse(Long.MIN_VALUE) : Long.MIN_VALUE;
+                case SAME_LINE -> section != null ? section.getTrainLine().map(x -> lastDepartureByLine.getOrDefault(x, Long.MIN_VALUE)).orElse(Long.MIN_VALUE) : Long.MIN_VALUE;
                 default -> lastDepartureTime;
             };
         }

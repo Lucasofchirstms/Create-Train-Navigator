@@ -1,6 +1,7 @@
 package de.mrjulsen.crn.data.train.portable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -8,6 +9,7 @@ import java.util.UUID;
 import com.simibubi.create.content.trains.entity.TrainIconType;
 
 import de.mrjulsen.crn.exceptions.RuntimeSideException;
+import de.mrjulsen.mcdragonlib.data.Cache;
 import de.mrjulsen.crn.data.train.TrainData;
 import de.mrjulsen.crn.data.train.TrainListener;
 import de.mrjulsen.crn.data.train.TrainStop;
@@ -25,9 +27,10 @@ public class BasicTrainDisplayData {
     private final String name;
     private final int color;
     private final TrainIconType icon;
-    private final List<ResourceLocation> statusLocations; // Server
-    private final List<CompiledTrainStatus> status; // Client
+    private final Collection<ResourceLocation> statusLocations; // Server
     private final boolean cancelled;
+
+    private final Cache<List<CompiledTrainStatus>> clientStatus;
 
     private static final String NBT_ID = "Id";
     private static final String NBT_NAME = "Name";
@@ -41,43 +44,23 @@ public class BasicTrainDisplayData {
         String name,
         int color,
         TrainIconType icon,
-        List<ResourceLocation> statusLocations,
-        List<CompiledTrainStatus> status,
+        Collection<ResourceLocation> statusLocations,
         boolean cancelled
     ) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.icon = icon;
-        this.status = status;
         this.statusLocations = statusLocations;
         this.cancelled = cancelled;
-    }
 
-    private static BasicTrainDisplayData createServer(
-        UUID id,
-        String name,
-        int color,
-        TrainIconType icon,
-        List<ResourceLocation> status,
-        boolean cancelled
-    ) {
-        return new BasicTrainDisplayData(id, name, color, icon, status, null, cancelled);
-    }
-
-    private static BasicTrainDisplayData createClient(
-        UUID id,
-        String name,
-        int color,
-        TrainIconType icon,
-        List<CompiledTrainStatus> status,
-        boolean cancelled
-    ) {
-        return new BasicTrainDisplayData(id, name, color, icon, null, status, cancelled);
+        this.clientStatus = new Cache<>(() -> {
+            return CompiledTrainStatus.load(statusLocations);
+        });
     }
 
     public static BasicTrainDisplayData empty() {
-        return new BasicTrainDisplayData(new UUID(0, 0), "", 0, TrainIconType.getDefault(), List.of(), List.of(), true);
+        return new BasicTrainDisplayData(new UUID(0, 0), "", 0, TrainIconType.getDefault(), List.of(), true);
     }
 
     /** Server-side only! */
@@ -89,10 +72,10 @@ public class BasicTrainDisplayData {
             return empty();
         }
         TrainData data = TrainListener.data.get(train);
-        return createServer(
+        return new BasicTrainDisplayData(
             data.getTrainId(),
             data.getTrainDisplayName(),
-            data.getCurrentSection().getTrainLine2().map(x -> x.getColor()).orElse(0),
+            data.getCurrentSection().getTrainLine().map(x -> x.getColor()).orElse(0),
             data.getTrain().icon,
             new ArrayList<>(data.getStatus()),
             data.isCancelled()
@@ -108,10 +91,10 @@ public class BasicTrainDisplayData {
             return empty();
         }
         TrainData data = TrainListener.data.get(stop.getTrainId());
-        return createServer(
+        return new BasicTrainDisplayData(
             stop.getTrainId(),
             stop.getTrainDisplayName(),
-            data.getSectionForIndex(stop.getScheduleIndex()).getTrainLine2().map(x -> x.getColor()).orElse(0),
+            data.getSectionForIndex(stop.getScheduleIndex()).getTrainLine().map(x -> x.getColor()).orElse(0),
             stop.getTrainIcon(),
             new ArrayList<>(data.getStatus()),
             data.isCancelled()
@@ -131,7 +114,7 @@ public class BasicTrainDisplayData {
     }
 
     public List<CompiledTrainStatus> getStatus() {
-        return status;
+        return clientStatus.get();
     }
 
     public boolean isCancelled() {
@@ -154,15 +137,8 @@ public class BasicTrainDisplayData {
         CompoundTag nbt = new CompoundTag();
 
         ListTag statusList = new ListTag();
-        if (statusLocations != null) {
-            for (ResourceLocation s : statusLocations) {
-                statusList.add(StringTag.valueOf(s.toString()));
-            }
-        } else if (status != null) {
-            
-            for (CompiledTrainStatus s : status) {
-                statusList.add(StringTag.valueOf(s.id().toString()));
-            }
+        for (ResourceLocation s : statusLocations) {
+            statusList.add(StringTag.valueOf(s.toString()));
         }
 
         nbt.putUUID(NBT_ID, id);
@@ -175,12 +151,12 @@ public class BasicTrainDisplayData {
     }
 
     public static BasicTrainDisplayData fromNbt(CompoundTag nbt) {
-        return createClient(
+        return new BasicTrainDisplayData(
             nbt.getUUID(NBT_ID),
             nbt.getString(NBT_NAME),
             nbt.getInt(NBT_COLOR),
             TrainIconType.byId(new ResourceLocation(nbt.getString(NBT_ICON))),
-            nbt.getList(NBT_STATUS, Tag.TAG_STRING).stream().map(x -> CompiledTrainStatus.load(new ResourceLocation(((StringTag)x).getAsString()))).toList(),
+            nbt.getList(NBT_STATUS, Tag.TAG_STRING).stream().map(x -> new ResourceLocation(((StringTag)x).getAsString())).toList(),
             nbt.getBoolean(NBT_CANCELLED)
         );
     }

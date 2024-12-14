@@ -1,10 +1,11 @@
 package de.mrjulsen.crn.data.train;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -132,11 +133,11 @@ public class TrainStatus {
         }
 
         /** Client-side only! */
-        public static Set<CompiledTrainStatus> load(Set<ResourceLocation> ids) throws RuntimeSideException {
+        public static List<CompiledTrainStatus> load(Collection<ResourceLocation> ids) throws RuntimeSideException {
             if (Platform.getEnv() == EnvType.SERVER) {
                 throw new RuntimeSideException(true);
             }
-            Set<CompiledTrainStatus> status = new HashSet<>(ids.size());
+            List<CompiledTrainStatus> status = new ArrayList<>(ids.size());
             for (ResourceLocation loc : ids) {
                 status.add(TrainStatus.Registry.getRegisteredStatus().get(loc).compile());
             }
