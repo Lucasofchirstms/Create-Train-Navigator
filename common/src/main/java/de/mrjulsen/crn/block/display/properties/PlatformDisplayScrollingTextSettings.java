@@ -2,8 +2,7 @@ package de.mrjulsen.crn.block.display.properties;
 
 import de.mrjulsen.crn.block.display.properties.components.ITimeDisplaySetting;
 import de.mrjulsen.crn.block.properties.ETimeDisplay;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetBuilder;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -26,9 +25,9 @@ public class PlatformDisplayScrollingTextSettings extends BasicDisplaySettings i
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void buildGui(ModularWidgetContainer container, ModularWidgetBuilder builder) {
-        this.buildColorGui(container, builder);
-        this.buildTimeDisplayGui(container, builder);
+    public void buildGui(GuiBuilderContext context) {
+        super.buildGui(context);
+        this.buildTimeDisplayGui(context);
     }
 
     @Override

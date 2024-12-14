@@ -6,7 +6,8 @@
   "client": [
     "ScheduleScreenAccessor",
     "ModularGuiLineBuilderAccessor",
-    "ScheduleScreenMixin"
+    "ScheduleScreenMixin",
+    "StationBlockEntityMixin"
   ],
   "mixins": [
     "ScheduleRuntimeAccessor",
@@ -18,8 +19,6 @@
     "TrainMixin",
     "ItemMixin",
     "NavigationMixin",
-    "StationBlockEntityMixin",
-
     "ScheduleEntryMixin"
   ],
   "injectors": {

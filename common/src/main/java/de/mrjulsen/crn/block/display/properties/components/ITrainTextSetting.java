@@ -2,15 +2,9 @@ package de.mrjulsen.crn.block.display.properties.components;
 
 import java.util.Arrays;
 
-import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.block.display.properties.IDisplaySettings;
-import de.mrjulsen.crn.client.gui.ModGuiIcons;
-import de.mrjulsen.crn.client.gui.widgets.DLCreateSelectionScrollInput;
-import de.mrjulsen.crn.client.gui.widgets.IconSlotWidget;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetBuilder;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import de.mrjulsen.mcdragonlib.core.ITranslatableEnum;
-import de.mrjulsen.mcdragonlib.util.TextUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.StringRepresentable;
@@ -70,23 +64,8 @@ public interface ITrainTextSetting {
     void setTrainTextComponents(ETrainTextComponents v);
 
     @Environment(EnvType.CLIENT)
-    default void buildTrainTextGui(ModularWidgetContainer container, ModularWidgetBuilder builder) {
-        builder.addLine(GUI_LINE_SHOW_ARRIVAL_NAME, (line) -> {            
-            line.add(new IconSlotWidget(line.getCurrentX(), line.y() + 2, ModGuiIcons.TEXT.getAsSprite(16, 16)));
-            line.add(new DLCreateSelectionScrollInput(container.getParentScreen(), line.getCurrentX() + 6, line.y() + 2, line.getRemainingWidth() - 6, 18))
-                .setRenderArrow(true)    
-                .forOptions(Arrays.stream(ETrainTextComponents.values()).map(x -> TextUtils.translate(x.getValueTranslationKey(CreateRailwaysNavigator.MOD_ID))).toList())
-                .titled(TextUtils.translate("enum.createrailwaysnavigator.train_text_components"))
-                .addHint(TextUtils.translate("enum.createrailwaysnavigator.train_text_components.description"))
-                .format((val) -> {
-                    return TextUtils.translate(ETrainTextComponents.getById(val).getValueTranslationKey(CreateRailwaysNavigator.MOD_ID));
-                })
-                .setState(getTrainTextComponents().getId())
-                .calling((i) -> {
-                    setTrainTextComponents(ETrainTextComponents.getById(i));
-                })
-            ;
-        });
+    default void buildTrainTextGui(GuiBuilderContext context) {
+        GuiBuilderWrapper.buildTrainTextGui(this, context);
     }
     
     default void copyTrainTextSetting(IDisplaySettings oldSettings) {

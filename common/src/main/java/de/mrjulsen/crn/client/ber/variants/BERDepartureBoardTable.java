@@ -258,8 +258,8 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
         ;
         
         final float remainingSpace = blockEntity.getXSizeScaled() * 16 - 3 - hTrainLabel.getX() - hTrainLabel.getMaxWidth() - settings.getPlatformWidth() - SPACING; // No *2!
-        final float infoSpace = (remainingSpace * settings.getInfoWidthPercentage()) - SPACING;
-        final float stopoversSpace = (remainingSpace * settings.getStopoversWidthPercentage()) - SPACING;
+        final float infoSpace = hasInfo ? (remainingSpace * settings.getInfoWidthPercentage()) - SPACING : 0;
+        final float stopoversSpace = hasStopovers ? (remainingSpace * settings.getStopoversWidthPercentage()) - SPACING : 0;
         final float destinationSpace = remainingSpace - infoSpace - stopoversSpace - SPACING * 3;
 
         BERLabel hStopoversLabel = headlines[LineComponent.STOPOVERS.i()];

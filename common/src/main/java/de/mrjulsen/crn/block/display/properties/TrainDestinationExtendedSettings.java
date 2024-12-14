@@ -1,8 +1,7 @@
 package de.mrjulsen.crn.block.display.properties;
 
 import de.mrjulsen.crn.block.display.properties.components.ITrainNameWidthSetting;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetBuilder;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -25,9 +24,9 @@ public class TrainDestinationExtendedSettings extends BasicDisplaySettings imple
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void buildGui(ModularWidgetContainer container, ModularWidgetBuilder builder) {
-        this.buildColorGui(container, builder);
-        this.buildTrainNameGui(container, builder, true, true);
+    public void buildGui(GuiBuilderContext context) {
+        super.buildGui(context);
+        this.buildTrainNameGui(context, true, true);
     }
 
     @Override

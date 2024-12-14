@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.station.GlobalStation;
 
-import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.data.TrainGroup;
 import de.mrjulsen.crn.data.TrainLine;
 import de.mrjulsen.mcdragonlib.DragonLib;
@@ -130,12 +129,19 @@ public final class StationDepartureHistory {
         }
     }
 
+    public static synchronized void clearAll() {
+        trainDepartures.clear();
+        departureInputKeyByStation.clear();
+        departureDataCache.clearAll();
+        lastDepartureTimeDataCache.clearAll();
+    }
+
 
 
     public static class Data {
         private long lastDepartureTime = Long.MIN_VALUE;
-        private Map<TrainLine, Long> lastDepartureByLine = new HashMap<>();
-        private Map<TrainGroup, Long> lastDepartureByGroup = new HashMap<>();
+        private Map<TrainLine, Long> lastDepartureByLine = new ConcurrentHashMap<>();
+        private Map<TrainGroup, Long> lastDepartureByGroup = new ConcurrentHashMap<>();
 
         public void setDeparture(Train train) {
             this.lastDepartureTime = DragonLib.getCurrentServer().get().overworld().getGameTime();

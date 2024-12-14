@@ -6,8 +6,7 @@ import de.mrjulsen.crn.block.display.properties.components.IShowLineColorSetting
 import de.mrjulsen.crn.block.display.properties.components.ITimeDisplaySetting;
 import de.mrjulsen.crn.block.display.properties.components.ITrainNameWidthSetting;
 import de.mrjulsen.crn.block.properties.ETimeDisplay;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetBuilder;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -42,13 +41,13 @@ public class PlatformDisplayTableSettings extends BasicDisplaySettings implement
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void buildGui(ModularWidgetContainer container, ModularWidgetBuilder builder) {
-        this.buildColorGui(container, builder);
-        this.buildTimeDisplayGui(container, builder);
-        this.buildTrainNameGui(container, builder, true, false);
-        this.buildPlatformWidthGui(container, builder, true);
-        this.buildShowArrivalGui(container, builder);
-        this.buildShowLineColorGui(container, builder);
+    public void buildGui(GuiBuilderContext context) {
+        super.buildGui(context);
+        this.buildTimeDisplayGui(context);
+        this.buildTrainNameGui(context, true, false);
+        this.buildPlatformWidthGui(context, true);
+        this.buildShowArrivalGui(context);
+        this.buildShowLineColorGui(context);
     }
 
     @Override

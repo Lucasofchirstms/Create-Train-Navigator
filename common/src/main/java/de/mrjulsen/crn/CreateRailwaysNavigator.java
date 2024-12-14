@@ -6,7 +6,6 @@ import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
 import com.simibubi.create.foundation.item.TooltipHelper.Palette;
-import com.simibubi.create.foundation.utility.LangBuilder;
 
 import de.mrjulsen.crn.block.AdvancedDisplayBlock;
 import de.mrjulsen.crn.event.CRNClientEventsRegistryEvent;

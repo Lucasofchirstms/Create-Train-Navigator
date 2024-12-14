@@ -13,9 +13,11 @@ import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity;
 import de.mrjulsen.crn.block.display.properties.BasicDisplaySettings;
 import de.mrjulsen.crn.block.display.properties.IDisplaySettings;
 import de.mrjulsen.crn.block.properties.EDisplayType;
-import de.mrjulsen.crn.client.ber.variants.BERError;
 import de.mrjulsen.crn.registry.ModDisplayTypes;
 import de.mrjulsen.crn.client.ber.variants.AbstractAdvancedDisplayRenderer;
+import de.mrjulsen.crn.client.ber.variants.BERError;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
@@ -23,6 +25,7 @@ public final class AdvancedDisplaysRegistry {
 
     public static record DisplayTypeResourceKey(EDisplayType category, String name) {
         private static final String NBT_ID = "DisplayId";
+        @Deprecated private static final String LEGACY_NBT_ID = "Id";
         @Deprecated private static final String LEGACY_NBT_CATEGORY = "Category";
 
         @Override
@@ -45,7 +48,7 @@ public final class AdvancedDisplaysRegistry {
 
         @Deprecated
         public static DisplayTypeResourceKey legacy_fromNbt(CompoundTag nbt) {
-            return new DisplayTypeResourceKey(EDisplayType.getTypeById(nbt.getByte(LEGACY_NBT_CATEGORY)), new ResourceLocation(nbt.getString(NBT_ID)).getPath());
+            return new DisplayTypeResourceKey(EDisplayType.getTypeById(nbt.getByte(LEGACY_NBT_CATEGORY)), new ResourceLocation(nbt.getString(LEGACY_NBT_ID)).getPath());
         }
         
         public static DisplayTypeResourceKey fromNbt(CompoundTag nbt) {
@@ -105,6 +108,7 @@ public final class AdvancedDisplaysRegistry {
         return key != null && newDisplayTypes.containsKey(key.category()) && newDisplayTypes.get(key.category()).containsKey(key.name());
     }
 
+    @Environment(EnvType.CLIENT)
     public static AbstractAdvancedDisplayRenderer<?> createRenderer(DisplayTypeResourceKey key) {
         if (!isRegietered(key)) {
             return new BERError();

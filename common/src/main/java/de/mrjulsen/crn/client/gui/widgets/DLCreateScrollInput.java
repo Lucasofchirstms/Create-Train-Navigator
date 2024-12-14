@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import de.mrjulsen.crn.client.gui.CreateDynamicWidgets;
 import de.mrjulsen.mcdragonlib.DragonLib;
-import de.mrjulsen.mcdragonlib.client.ITickable;
 import de.mrjulsen.mcdragonlib.client.gui.DLScreen;
 import de.mrjulsen.mcdragonlib.client.gui.widgets.DLContextMenu;
 import de.mrjulsen.mcdragonlib.client.gui.widgets.IDragonLibWidget;
@@ -20,7 +19,7 @@ import de.mrjulsen.mcdragonlib.util.DLUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
-public class DLCreateScrollInput extends ScrollInput implements IDragonLibWidget, ITickable {
+public class DLCreateScrollInput extends ScrollInput implements IDragonLibWidget {
 
     private boolean mouseSelected;
     protected boolean renderArrow;

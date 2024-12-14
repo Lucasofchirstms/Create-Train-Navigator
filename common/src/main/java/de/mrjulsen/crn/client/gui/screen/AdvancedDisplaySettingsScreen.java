@@ -28,6 +28,7 @@ import de.mrjulsen.crn.client.gui.widgets.DLCreateIconButton;
 import de.mrjulsen.crn.client.gui.widgets.DLCreateSelectionScrollInput;
 import de.mrjulsen.crn.client.gui.widgets.IconSlotWidget;
 import de.mrjulsen.crn.client.gui.widgets.ModernVerticalScrollBar;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
 import de.mrjulsen.crn.config.ModCommonConfig;
 import de.mrjulsen.crn.network.packets.cts.AdvancedDisplayUpdatePacket;
@@ -215,7 +216,7 @@ public class AdvancedDisplaySettingsScreen extends DLScreen {
         if (advancedSettingsExpanded) {
             ModernVerticalScrollBar advancedSettingsScrollBar = new ModernVerticalScrollBar(this, 0, 0, 0, GuiAreaDefinition.empty());
             advancedSettingsContainer = addRenderableWidget(new ModularWidgetContainer(this, workingArea.getX() + 2, commonSettingsContainer.y() + commonSettingsContainer.height() + 3 + 18, workingArea.getWidth() - 4, workingArea.getHeight() - 2 - commonSettingsContainer.height() - 3 - 18, (w, builder) ->  {
-                settings.buildGui(w, builder);
+                settings.buildGui(new GuiBuilderContext(builder, w));
             }, advancedSettingsScrollBar, 18, 18, 0, 4));    
             advancedSettingsScrollBar.setScrollArea(GuiAreaDefinition.of(advancedSettingsContainer));
             addRenderableWidget(advancedSettingsScrollBar);

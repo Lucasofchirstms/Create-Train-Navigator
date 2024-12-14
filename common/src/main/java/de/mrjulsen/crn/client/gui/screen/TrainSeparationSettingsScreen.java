@@ -64,6 +64,9 @@ public class TrainSeparationSettingsScreen extends DLScreen {
         super(title);
         this.lastScreen = lastScreen;
         this.nbt = nbt;
+        this.time = nbt.getInt(TrainSeparationCondition.NBT_TIME);
+        this.timeUnit = TimeUnit.values()[nbt.getInt(TrainSeparationCondition.NBT_TIME_UNIT)];
+        this.filter = ETrainFilter.getByIndex(nbt.getByte(TrainSeparationCondition.NBT_TRAIN_FILTER));
     }
 
     @Override
@@ -104,7 +107,7 @@ public class TrainSeparationSettingsScreen extends DLScreen {
                     .titled(Lang.translateDirect("generic.duration"))
                     .withShiftStep(15)
                     .withRange(0, 121)
-                    .setState(nbt.getInt(TrainSeparationCondition.NBT_TIME))
+                    .setState(time)
                     .calling(x -> {
                         time = x;
                     })
@@ -114,7 +117,7 @@ public class TrainSeparationSettingsScreen extends DLScreen {
                     .forOptions(TimeUnit.translatedOptions())
                     .setState(timeUnit.ordinal())
                     .titled(Lang.translateDirect("generic.timeUnit"))
-                    .setState(nbt.getInt(TrainSeparationCondition.NBT_TIME_UNIT))
+                    .setState(timeUnit.ordinal())
                     .calling((i) -> {
                         timeUnit = TimeUnit.values()[i];
                     })
@@ -129,7 +132,7 @@ public class TrainSeparationSettingsScreen extends DLScreen {
                     .setState(filter.getIndex())
                     .titled(TextUtils.translate(ETrainFilter.ANY.getEnumTranslationKey(CreateRailwaysNavigator.MOD_ID)))
                     .addHint(TextUtils.translate(ETrainFilter.ANY.getEnumDescriptionTranslationKey(CreateRailwaysNavigator.MOD_ID)))
-                    .setState(nbt.getByte(TrainSeparationCondition.NBT_TRAIN_FILTER))
+                    .setState(filter.getIndex())
                     .calling((i) -> {
                         filter = ETrainFilter.getByIndex(i);
                     })

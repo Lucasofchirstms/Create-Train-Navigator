@@ -1,7 +1,6 @@
 package de.mrjulsen.crn.block.display.properties;
 
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetBuilder;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import de.mrjulsen.mcdragonlib.data.INBTSerializable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -32,5 +31,5 @@ public interface IDisplaySettings extends INBTSerializable {
      * @param container The container of the settings.
      * @param builder The builder to build the settings lines.
      */
-    @Environment(EnvType.CLIENT) void buildGui(ModularWidgetContainer container, ModularWidgetBuilder builder);
+    @Environment(EnvType.CLIENT) void buildGui(GuiBuilderContext context);
 }

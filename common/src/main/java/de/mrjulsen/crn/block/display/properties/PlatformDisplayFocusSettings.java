@@ -1,15 +1,13 @@
 package de.mrjulsen.crn.block.display.properties;
 
+import de.mrjulsen.crn.block.display.properties.components.GuiBuilderWrapper;
 import de.mrjulsen.crn.block.display.properties.components.IPlatformWidthSetting;
 import de.mrjulsen.crn.block.display.properties.components.IShowArrivalSetting;
 import de.mrjulsen.crn.block.display.properties.components.IShowLineColorSetting;
 import de.mrjulsen.crn.block.display.properties.components.ITimeDisplaySetting;
 import de.mrjulsen.crn.block.display.properties.components.ITrainNameWidthSetting;
 import de.mrjulsen.crn.block.properties.ETimeDisplay;
-import de.mrjulsen.crn.client.gui.widgets.DLCreateScrollInput;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetBuilder;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
-import de.mrjulsen.mcdragonlib.util.TextUtils;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -54,94 +52,13 @@ public class PlatformDisplayFocusSettings extends BasicDisplaySettings implement
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void buildGui(ModularWidgetContainer container, ModularWidgetBuilder builder) {
-        this.buildColorGui(container, builder);
-        this.buildTimeDisplayGui(container, builder);
-        this.buildBasicTextWidthGui(container, builder);
-        builder.addToLine(GUI_LINE_TEXT_SIZE_NAME, (line) -> {
-            int w = (line.getWidth() - USED_LINE_SPACE) / 4 - 3;
-            line.add(new DLCreateScrollInput(container.getParentScreen(), line.getCurrentX() + 4, line.y() + 2, w, 18))
-                .titled(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.train_name_width_table"))
-                .addHint(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.train_name_width.description"))
-                .withRange(-1, 100)
-                .withShiftStep(5)
-                .setState(getTrainNameWidth())
-                .format((val) -> {
-                    if (val < 0) {
-                        return TextUtils.translate("gui.createrailwaysnavigator.common.auto");
-                    } else if (val >= 100) {
-                        return TextUtils.translate("gui.createrailwaysnavigator.common.max");
-                    }
-                    return TextUtils.text(String.valueOf(val) + "px");
-                })
-                .calling((i) -> {
-                    setTrainNameWidth(i.byteValue());
-                })
-            ;
-        });
-        builder.addToLine(GUI_LINE_TEXT_SIZE_NAME, (line) -> {
-            int w = (line.getWidth() - USED_LINE_SPACE) / 4 - 3;
-            line.add(new DLCreateScrollInput(container.getParentScreen(), line.getCurrentX() + 4, line.y() + 2, w, 18))
-                .titled(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.platform_width_table"))
-                .addHint(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.platform_width.description"))
-                .withRange(-1, 65)
-                .withShiftStep(4)
-                .setState(getPlatformWidth())
-                .format((val) -> {
-                    if (val >= 0) {
-                        return TextUtils.text(String.valueOf(val) + "px");
-                    }
-                    return TextUtils.translate("gui.createrailwaysnavigator.common.auto");
-                })
-                .calling((i) -> {
-                    setPlatformWidth(i.byteValue());
-                })
-            ;            
-        });
-
-
-        builder.addToLine(GUI_LINE_TEXT_SIZE_NAME, (line) -> {
-            int w = (line.getWidth() - USED_LINE_SPACE) / 4 - 3;
-            line.add(new DLCreateScrollInput(container.getParentScreen(), line.getCurrentX() + 4, line.y() + 2, w, 18))
-                .titled(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.train_name_width_next"))
-                .addHint(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.train_name_width.description"))
-                .withRange(-1, 100)
-                .withShiftStep(5)
-                .setState(getTrainNameWidthNextStop())
-                .format((val) -> {
-                    if (val < 0) {
-                        return TextUtils.translate("gui.createrailwaysnavigator.common.auto");
-                    } else if (val >= 100) {
-                        return TextUtils.translate("gui.createrailwaysnavigator.common.max");
-                    }
-                    return TextUtils.text(String.valueOf(val) + "px");
-                })
-                .calling((i) -> {
-                    setTrainNameWidthNextStop(i.byteValue());
-                })
-            ;
-        });
-        builder.addToLine(GUI_LINE_TEXT_SIZE_NAME, (line) -> {
-            int w = (line.getWidth() - USED_LINE_SPACE) / 4 - 3;
-            line.add(new DLCreateScrollInput(container.getParentScreen(), line.getCurrentX() + 4, line.y() + 2, w, 18))
-                .titled(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.platform_width_next"))
-                .addHint(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.platform_width.description"))
-                .withRange(-1, 65)
-                .withShiftStep(4)
-                .setState(getPlatformWidthNextStop())
-                .format((val) -> {
-                    if (val >= 0) {
-                        return TextUtils.text(String.valueOf(val) + "px");
-                    }
-                    return TextUtils.translate("gui.createrailwaysnavigator.common.auto");
-                })
-                .calling((i) -> {
-                    setPlatformWidthNextStop(i.byteValue());
-                })
-            ;            
-        });
-        this.buildShowArrivalGui(container, builder);
-        this.buildShowLineColorGui(container, builder);
+    public void buildGui(GuiBuilderContext context) {
+        super.buildGui(context);
+        this.buildTimeDisplayGui(context);
+        this.buildBasicTextWidthGui(context);
+        GuiBuilderWrapper.buildPlatformDisplayFocusGui(this, context);
+        this.buildShowArrivalGui(context);
+        this.buildShowLineColorGui(context);
     }
 
     @Override

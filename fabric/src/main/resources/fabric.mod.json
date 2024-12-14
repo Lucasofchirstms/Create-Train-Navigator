@@ -17,7 +17,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "${maven_group}.fabric.${display_name}Fabric"
+      "${maven_group}.fabric.${main_class_name}Fabric"
     ]
   },
   "mixins": [

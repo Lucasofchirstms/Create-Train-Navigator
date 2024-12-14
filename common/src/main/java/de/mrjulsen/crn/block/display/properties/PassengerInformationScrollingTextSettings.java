@@ -4,10 +4,7 @@ import de.mrjulsen.crn.block.display.properties.components.IShowExitDirectionSet
 import de.mrjulsen.crn.block.display.properties.components.IShowTimeAndDateSetting;
 import de.mrjulsen.crn.block.display.properties.components.IShowTrainStatsSetting;
 import de.mrjulsen.crn.block.display.properties.components.ITrainTextSetting;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetBuilder;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import net.minecraft.nbt.CompoundTag;
 
 public class PassengerInformationScrollingTextSettings extends BasicDisplaySettings implements IShowTrainStatsSetting, IShowExitDirectionSetting, IShowTimeAndDateSetting, ITrainTextSetting {
@@ -36,13 +33,12 @@ public class PassengerInformationScrollingTextSettings extends BasicDisplaySetti
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
-    public void buildGui(ModularWidgetContainer container, ModularWidgetBuilder builder) {
-        this.buildColorGui(container, builder);
-        this.buildShowStatsGui(container, builder);
-        this.buildShowExitGui(container, builder);
-        this.buildShowTimeAndDateGui(container, builder);
-        this.buildTrainTextGui(container, builder);
+    public void buildGui(GuiBuilderContext context) {
+        super.buildGui(context);
+        this.buildShowStatsGui(context);
+        this.buildShowExitGui(context);
+        this.buildShowTimeAndDateGui(context);
+        this.buildTrainTextGui(context);
     }
 
     @Override

@@ -15,6 +15,7 @@ public final class ModTrainStatusInfos {
     
     public static final Registry REGISTRY = Registry.create(CreateRailwaysNavigator.MOD_ID);
 
+    // TODO Translation keys erst auf dem client übersetzen!
     // Custom
     public static final TrainStatus RED_SIGNAL = REGISTRY.register("red_signal", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, (data) -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.red_signal"), (data) -> {
         return data.isCurrentSectionDelayed() &&

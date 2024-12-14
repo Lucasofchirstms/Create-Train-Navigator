@@ -13,7 +13,6 @@ import de.mrjulsen.crn.client.gui.CreateDynamicWidgets.ColorShade;
 import de.mrjulsen.crn.client.gui.widgets.AbstractFlyoutWidget.FlyoutPointer;
 import de.mrjulsen.crn.client.gui.widgets.flyouts.FlyoutScrollInput;
 import de.mrjulsen.mcdragonlib.DragonLib;
-import de.mrjulsen.mcdragonlib.client.ITickable;
 import de.mrjulsen.mcdragonlib.client.gui.DLScreen;
 import de.mrjulsen.mcdragonlib.client.gui.widgets.DLContextMenu;
 import de.mrjulsen.mcdragonlib.client.gui.widgets.IDragonLibWidget;
@@ -27,7 +26,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
-public class DLCreateSelectionScrollInput extends SelectionScrollInput implements IDragonLibWidget, ITickable {
+public class DLCreateSelectionScrollInput extends SelectionScrollInput implements IDragonLibWidget {
 
     private boolean mouseSelected;
     protected boolean renderArrow;

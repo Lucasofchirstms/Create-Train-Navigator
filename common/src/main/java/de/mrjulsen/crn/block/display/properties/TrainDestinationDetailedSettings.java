@@ -1,8 +1,7 @@
 package de.mrjulsen.crn.block.display.properties;
 
 import de.mrjulsen.crn.block.display.properties.components.ICarriageIndexSetting;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetBuilder;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -28,9 +27,9 @@ public class TrainDestinationDetailedSettings extends BasicDisplaySettings imple
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void buildGui(ModularWidgetContainer container, ModularWidgetBuilder builder) {
-        this.buildColorGui(container, builder);
-        this.buildCarriageIndexGui(container, builder);
+    public void buildGui(GuiBuilderContext context) {
+        super.buildGui(context);
+        this.buildCarriageIndexGui(context);
     }
 
     @Override

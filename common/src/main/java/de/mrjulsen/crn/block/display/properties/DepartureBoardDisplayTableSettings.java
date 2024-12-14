@@ -1,20 +1,14 @@
 package de.mrjulsen.crn.block.display.properties;
 
-import com.simibubi.create.foundation.gui.widget.ScrollInput;
-
+import de.mrjulsen.crn.block.display.properties.components.GuiBuilderWrapper;
 import de.mrjulsen.crn.block.display.properties.components.IPlatformWidthSetting;
 import de.mrjulsen.crn.block.display.properties.components.IShowArrivalSetting;
 import de.mrjulsen.crn.block.display.properties.components.IShowLineColorSetting;
 import de.mrjulsen.crn.block.display.properties.components.ITimeDisplaySetting;
 import de.mrjulsen.crn.block.display.properties.components.ITrainNameWidthSetting;
 import de.mrjulsen.crn.block.properties.ETimeDisplay;
-import de.mrjulsen.crn.client.gui.widgets.DLCreateScrollInput;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetBuilder;
-import de.mrjulsen.crn.client.gui.widgets.modular.ModularWidgetContainer;
-import de.mrjulsen.mcdragonlib.data.Single.MutableSingle;
-import de.mrjulsen.mcdragonlib.util.DLUtils;
+import de.mrjulsen.crn.client.gui.widgets.modular.GuiBuilderContext;
 import de.mrjulsen.mcdragonlib.util.MathUtils;
-import de.mrjulsen.mcdragonlib.util.TextUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -58,60 +52,14 @@ public class DepartureBoardDisplayTableSettings extends BasicDisplaySettings imp
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void buildGui(ModularWidgetContainer container, ModularWidgetBuilder builder) {
-        this.buildColorGui(container, builder);
-        this.buildTimeDisplayGui(container, builder);
-        this.buildTrainNameGui(container, builder, false, false);
-        this.buildPlatformWidthGui(container, builder, false);
-
-        MutableSingle<ScrollInput> stopovers = new MutableSingle<ScrollInput>(null);
-        MutableSingle<ScrollInput> info = new MutableSingle<ScrollInput>(null);
-        builder.addToLine(GUI_LINE_TEXT_SIZE_NAME, (line) -> {
-            int w = (line.getWidth() - USED_LINE_SPACE) / 4 - 3;
-            stopovers.setFirst(new DLCreateScrollInput(container.getParentScreen(), line.getCurrentX() + 4, line.y() + 2, w, 18)
-                .titled(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.stopovers_width"))
-                .addHint(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.stopovers_width.description"))
-                .withRange(0, 101)
-                .withShiftStep(5)
-                .setState((int)(getStopoversWidthPercentage() * 100))
-                .format((val) -> {
-                    return TextUtils.text(String.valueOf(val) + "%");
-                })
-                .calling((i) -> {
-                    setStopoversWidthPercentageInt(i.byteValue());
-                    DLUtils.doIfNotNull(info.getFirst(), x -> x.withRange(0, MathUtils.clamp(101 - i, 0, 101)));
-                })
-            );
-            line.add(stopovers.getFirst());
-            if (stopovers.getFirst() != null && info.getFirst() != null) {
-                stopovers.getFirst().withRange(0, MathUtils.clamp(101 - info.getFirst().getState(), 0, 101));
-                info.getFirst().withRange(0, MathUtils.clamp(101 - stopovers.getFirst().getState(), 0, 101));
-            }
-        });
-        builder.addToLine(GUI_LINE_TEXT_SIZE_NAME, (line) -> {
-            int w = (line.getWidth() - USED_LINE_SPACE) / 4 - 3;
-            info.setFirst(new DLCreateScrollInput(container.getParentScreen(), line.getCurrentX() + 4, line.y() + 2, w, 18)
-                .titled(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.info_width"))
-                .addHint(TextUtils.translate("gui.createrailwaysnavigator.display_source.advanced_display.info_width.description"))
-                .withRange(0, 101)
-                .withShiftStep(5)
-                .setState((int)(getInfoWidthPercentage() * 100))
-                .format((val) -> {
-                    return TextUtils.text(String.valueOf(val) + "%");
-                })
-                .calling((i) -> {
-                    setInfoWidthPercentageInt(i.byteValue());
-                    DLUtils.doIfNotNull(stopovers.getFirst(), x -> x.withRange(0, MathUtils.clamp(101 - i, 0, 101)));
-                })
-            );
-            line.add(info.getFirst());
-            if (stopovers.getFirst() != null && info.getFirst() != null) {
-                stopovers.getFirst().withRange(0, MathUtils.clamp(101 - info.getFirst().getState(), 0, 101));
-                info.getFirst().withRange(0, MathUtils.clamp(101 - stopovers.getFirst().getState(), 0, 101));
-            }
-        });
-        this.buildShowArrivalGui(container, builder);
-        this.buildShowLineColorGui(container, builder);
+    public void buildGui(GuiBuilderContext context) {
+        super.buildGui(context);
+        this.buildTimeDisplayGui(context);
+        this.buildTrainNameGui(context, false, false);
+        this.buildPlatformWidthGui(context, false);
+        GuiBuilderWrapper.buildDepartureBoardTableGui(this, context);
+        this.buildShowArrivalGui(context);
+        this.buildShowLineColorGui(context);
     }
 
     @Override
