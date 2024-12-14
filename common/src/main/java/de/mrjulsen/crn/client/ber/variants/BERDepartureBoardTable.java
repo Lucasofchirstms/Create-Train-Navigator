@@ -10,7 +10,7 @@ import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity.EUpdateReaso
 import de.mrjulsen.crn.block.properties.ETimeDisplay;
 import de.mrjulsen.crn.block.display.properties.DepartureBoardDisplayTableSettings;
 import de.mrjulsen.crn.client.ber.AdvancedDisplayRenderInstance;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.data.train.TrainStatus.CompiledTrainStatus;
 import de.mrjulsen.crn.data.train.portable.StationDisplayData;
@@ -73,7 +73,7 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
         headlines = new BERLabel[LineComponent.values().length];
 
         headlines[LineComponent.TIME.i()] = new BERLabel()
-            .setText(ELanguage.translate(keyDeparture).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
+            .setText(CustomLanguage.translate(keyDeparture).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
             .setYScale(0.4f)
             .setMaxWidth(12.5f, BoundsHitReaction.SCALE_SCROLL)
             .setScale(0.4f, 0.2f)
@@ -81,7 +81,7 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
             .setMaxWidth(0, BoundsHitReaction.CUT_OFF)
         ;
         headlines[LineComponent.TRAIN_NAME.i()] = new BERLabel()
-            .setText(ELanguage.translate(keyTrain).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
+            .setText(CustomLanguage.translate(keyTrain).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
             .setYScale(0.4f)
             .setScrollingSpeed(2)
             .setMaxWidth(14, BoundsHitReaction.SCALE_SCROLL)
@@ -91,7 +91,7 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
         ;
         
         headlines[LineComponent.PLATFORM.i()] = new BERLabel()
-            .setText(ELanguage.translate(keyPlatform).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
+            .setText(CustomLanguage.translate(keyPlatform).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
             .setYScale(0.4f)
             .setScale(0.4f, 0.2f)
             .setPos(0, 3)
@@ -99,7 +99,7 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
         ;
 
         headlines[LineComponent.DESTINATION.i()] = new BERLabel()
-            .setText(ELanguage.translate(keyDestination).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
+            .setText(CustomLanguage.translate(keyDestination).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
             .setYScale(0.4f)
             .setScrollingSpeed(2)
             .setScale(0.4f, 0.2f)
@@ -107,7 +107,7 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
             .setMaxWidth(0, BoundsHitReaction.CUT_OFF)
         ;
         headlines[LineComponent.STOPOVERS.i()] = new BERLabel()
-            .setText(ELanguage.translate(keyVia).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
+            .setText(CustomLanguage.translate(keyVia).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.ITALIC))
             .setYScale(0.4f)
             .setScrollingSpeed(2)
             .setScale(0.4f, 0.2f)
@@ -174,13 +174,13 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
         }
         Collection<Component> content = new ArrayList<>();
         if (data.getTrainData().isCancelled()) {
-            content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_cancelled", data.getTrainData().getName()));
+            content.add(CustomLanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_cancelled", data.getTrainData().getName()));
             return content;
         }
         String delay = getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(data.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(data.getStationData().getDepartureTimeDeviation()));
-        MutableComponent delayComponent = ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_delayed", data.getTrainData().getName(), delay);
+        MutableComponent delayComponent = CustomLanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_delayed", data.getTrainData().getName(), delay);
         if (getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ABS) {
-            delayComponent.append(" ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delay_abs_suffix"));
+            delayComponent.append(" ").append(CustomLanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delay_abs_suffix"));
         }
         content.add(delayComponent);
         for (CompiledTrainStatus status : data.getTrainData().getStatus()) {
@@ -338,7 +338,7 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
 
         BERLabel destinationLabel = components[LineComponent.DESTINATION.i()]
             .setText(isLast ?
-                ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".schedule_board.train_from", stop.getFirstStopName()) :
+                CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".schedule_board.train_from", stop.getFirstStopName()) :
                 TextUtils.text(stop.getStationData().getDestination()))
         ;
         BERLabel stopoversLabel;

@@ -15,7 +15,7 @@ import de.mrjulsen.crn.Constants;
 import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.client.ClientWrapper;
 import de.mrjulsen.crn.client.gui.ModGuiIcons;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.exceptions.RuntimeSideException;
 import de.mrjulsen.mcdragonlib.client.util.Graphics;
 import de.mrjulsen.mcdragonlib.client.util.GuiUtils;
@@ -37,9 +37,9 @@ public class TrainStatus {
     //public static final MutableComponent textTrackClosed = ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".delay_reason.track_closed");
 
     private static final Registry REGISTRY = Registry.create(CreateRailwaysNavigator.MOD_ID);
-    public static final TrainStatus DEFAULT_DELAY = REGISTRY.registerDefault("default_delay", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, () -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.unknown_delay"), null));
-    public static final TrainStatus DELAY_FROM_PREVIOUS_JOURNEY = REGISTRY.registerDefault("delay_from_previous_journey", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, () -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.delay_previous_journey"), null));
-    public static final TrainStatus CANCELLED = REGISTRY.registerDefault("cancelled", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, () -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_overview.cancelled"), null));
+    public static final TrainStatus DEFAULT_DELAY = REGISTRY.registerDefault("default_delay", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, () -> CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.unknown_delay"), null));
+    public static final TrainStatus DELAY_FROM_PREVIOUS_JOURNEY = REGISTRY.registerDefault("delay_from_previous_journey", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, () -> CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.delay_previous_journey"), null));
+    public static final TrainStatus CANCELLED = REGISTRY.registerDefault("cancelled", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, () -> CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_overview.cancelled"), null));
     
     public static final int HEIGHT = 9;
 

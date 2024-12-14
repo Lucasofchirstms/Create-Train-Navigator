@@ -5,7 +5,7 @@ import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity;
 import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity.EUpdateReason;
 import de.mrjulsen.crn.block.display.properties.TrainDestinationExtendedSettings;
 import de.mrjulsen.crn.client.ber.AdvancedDisplayRenderInstance;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.mcdragonlib.client.ber.BERGraphics;
 import de.mrjulsen.mcdragonlib.client.ber.BERLabel;
 import de.mrjulsen.mcdragonlib.client.ber.BERLabel.BoundsHitReaction;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class BERTrainDestinationDetailed implements AbstractAdvancedDisplayRenderer<TrainDestinationExtendedSettings> {
 
-    private final BERLabel outOfServiceLabel = new BERLabel(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.not_in_service"))
+    private final BERLabel outOfServiceLabel = new BERLabel(CustomLanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.not_in_service"))
         .setPos(3, 6)
         .setScale(0.5f, 0.25f)
         .setYScale(0.5f)
@@ -37,7 +37,7 @@ public class BERTrainDestinationDetailed implements AbstractAdvancedDisplayRende
         .setCentered(true)
         .setScrollingSpeed(2)
     ;
-    private final BERLabel viaLabel = new BERLabel(ELanguage.translate("gui.createrailwaysnavigator.via").withStyle(ChatFormatting.ITALIC))
+    private final BERLabel viaLabel = new BERLabel(CustomLanguage.translate("gui.createrailwaysnavigator.via").withStyle(ChatFormatting.ITALIC))
         .setScale(0.35f, 0.35f)
         .setYScale(0.35f)
     ;

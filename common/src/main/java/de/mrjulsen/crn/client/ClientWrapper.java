@@ -22,7 +22,7 @@ import de.mrjulsen.crn.client.gui.screen.TrainSeparationSettingsScreen;
 import de.mrjulsen.crn.client.gui.screen.TrainDebugScreen;
 import de.mrjulsen.crn.client.gui.screen.TrainSectionSettingsScreen;
 import de.mrjulsen.crn.client.gui.widgets.ResizableButton;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.data.schedule.condition.DynamicDelayCondition;
 import de.mrjulsen.crn.data.schedule.condition.TrainSeparationCondition;
@@ -55,7 +55,7 @@ import net.minecraft.world.level.Level;
 
 public class ClientWrapper {
     
-    private static ELanguage currentLanguage;
+    private static CustomLanguage currentLanguage;
     private static Language currentClientLanguage;
     
     public static void showNavigatorGui() {
@@ -75,14 +75,14 @@ public class ClientWrapper {
         DLScreen.setScreen(new AdvancedDisplaySettingsScreen(blockEntity));
     }
 
-    public static void updateLanguage(ELanguage lang, boolean force) {
+    public static void updateLanguage(CustomLanguage lang, boolean force) {
         if (currentLanguage == lang && !force) {
             return;
         }
 
-        LanguageInfo info = lang == ELanguage.DEFAULT ? null : Minecraft.getInstance().getLanguageManager().getLanguage(lang.getCode());
+        LanguageInfo info = lang == CustomLanguage.DEFAULT ? null : Minecraft.getInstance().getLanguageManager().getLanguage(lang.getCode());
         currentLanguage = lang;
-        if (lang == ELanguage.DEFAULT || info == null) {
+        if (lang == CustomLanguage.DEFAULT || info == null) {
             currentClientLanguage = Language.getInstance();
             CreateRailwaysNavigator.LOGGER.info("Updated custom language to: (Default)");
         } else {

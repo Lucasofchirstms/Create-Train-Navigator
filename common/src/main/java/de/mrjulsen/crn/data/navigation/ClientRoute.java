@@ -13,7 +13,7 @@ import java.lang.StringBuilder;
 
 import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.client.ClientWrapper;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.config.ModCommonConfig;
 import de.mrjulsen.crn.data.SavedRoutesManager;
 import de.mrjulsen.crn.data.train.ClientTrainStop;
@@ -232,10 +232,10 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
             if (currentPartIndex > 0) return;
             
             sendNotification(
-                ELanguage.translate(keyNotificationJourneyBeginsTitle, getEnd().getClientTag().tagName()),
+                CustomLanguage.translate(keyNotificationJourneyBeginsTitle, getEnd().getClientTag().tagName()),
                 getStart().getRealTimeStationTag().info().isPlatformKnown() ?
-                    ELanguage.translate(keyNotificationJourneyBeginsWithPlatform, getStart().getTrainDisplayName(), getStart().getDisplayTitle(), ModUtils.formatTime(getStart().getScheduledDepartureTime(), false), getStart().getRealTimeStationTag().info().platform()) :
-                    ELanguage.translate(keyNotificationJourneyBegins, getStart().getTrainDisplayName(), getStart().getDisplayTitle(), ModUtils.formatTime(getStart().getScheduledDepartureTime(), false))
+                    CustomLanguage.translate(keyNotificationJourneyBeginsWithPlatform, getStart().getTrainDisplayName(), getStart().getDisplayTitle(), ModUtils.formatTime(getStart().getScheduledDepartureTime(), false), getStart().getRealTimeStationTag().info().platform()) :
+                    CustomLanguage.translate(keyNotificationJourneyBegins, getStart().getTrainDisplayName(), getStart().getDisplayTitle(), ModUtils.formatTime(getStart().getScheduledDepartureTime(), false))
             );
 
             queuedAnnouncements.add(new QueuedAnnouncementEvent(() -> {
@@ -332,14 +332,14 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
 
             part.listen(ClientRoutePart.EVENT_SCHEDULE_CHANGED, this, x -> {
                 if (scheduleChangedSent) return;
-                sendNotification(ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_overview.notification.schedule_changed.title"), ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_overview.notification.schedule_changed"));
+                sendNotification(CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_overview.notification.schedule_changed.title"), CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_overview.notification.schedule_changed"));
                 notifyListeners(EVENT_SCHEDULE_CHANGED, new ListenerNotificationData(this, x.part(), x.trainStop(), null));
                 scheduleChangedSent = true;
             });
 
             part.listen(ClientRoutePart.EVENT_TRAIN_CANCELLED, this, x -> {
                 if (cancelledSent) return;
-                sendNotification(ELanguage.translate(keyNotificationConnectionCanceledTitle), ELanguage.translate(keyNotificationConnectionCanceled, x.part().getFirstStop().getTrainDisplayName()));
+                sendNotification(CustomLanguage.translate(keyNotificationConnectionCanceledTitle), CustomLanguage.translate(keyNotificationConnectionCanceled, x.part().getFirstStop().getTrainDisplayName()));
                 notifyListeners(EVENT_ANY_TRAIN_CANCELLED, new ListenerNotificationData(this, x.part(), x.trainStop(), null));
                 cancelledSent = true;
             });
@@ -401,7 +401,7 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
         getLastClientPart().listen(ClientRoutePart.EVENT_DEPARTURE_FROM_LAST_STOP, this, x -> {
             if (currentPartIndex < parts.size() - 1) return;
             this.progressState = RouteProgressState.AFTER;
-            sendNotification(ELanguage.translate(keyNotificationJourneyCompletedTitle), ELanguage.translate(keyNotificationJourneyCompleted));
+            sendNotification(CustomLanguage.translate(keyNotificationJourneyCompletedTitle), CustomLanguage.translate(keyNotificationJourneyCompleted));
             if (!savedRouteRemoved) {
                 savedRouteRemoved = true;
                 SavedRoutesManager.removeRoute(this);
@@ -462,7 +462,7 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
 
         listen(EVENT_ANY_STATION_CHANGED, this, (p) -> {
             if (stationChangedSent) return;
-            sendNotification(ELanguage.translate(keyNotificationPlatformChangedTitle), ELanguage.translate(keyNotificationPlatformChanged,
+            sendNotification(CustomLanguage.translate(keyNotificationPlatformChangedTitle), CustomLanguage.translate(keyNotificationPlatformChanged,
                 p.trainStop().getTrainDisplayName(),
                 p.trainStop().getRealTimeStationTag().info().platform()
             ));
@@ -476,11 +476,11 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
         });
 
         listen(EVENT_ANNOUNCE_TRANSFER_ARRIVAL_STATION, this, (p) -> {
-            sendNotification(ELanguage.translate(keyNotificationTransferTitle), getStart().getRealTimeStationTag().info().isPlatformKnown() ? ELanguage.translate(keyNotificationTransferWithPlatform,
+            sendNotification(CustomLanguage.translate(keyNotificationTransferTitle), getStart().getRealTimeStationTag().info().isPlatformKnown() ? CustomLanguage.translate(keyNotificationTransferWithPlatform,
                     p.connection().getDepartureStation().getTrainDisplayName(),
                     p.connection().getDepartureStation().getDisplayTitle(),
                     p.connection().getDepartureStation().getRealTimeStationTag().info().platform()
-                ) : ELanguage.translate(keyNotificationTransfer,
+                ) : CustomLanguage.translate(keyNotificationTransfer,
                     p.connection().getDepartureStation().getTrainDisplayName(),
                     p.connection().getDepartureStation().getDisplayTitle()
                 )
@@ -497,8 +497,8 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
     private void queueDelayNotification(ClientTrainStop stop, boolean start) {
         if (shouldShowNotifications()) {
             ClientWrapper.sendCRNNotification(
-                ELanguage.translate(keyNotificationTrainDelayedTitle, stop.getTrainDisplayName(), TimeUtils.parseDurationShort((int)(start ? stop.getDepartureTimeDeviation() : stop.getArrivalTimeDeviation()))),
-                ELanguage.translate(keyNotificationTrainDelayed,
+                CustomLanguage.translate(keyNotificationTrainDelayedTitle, stop.getTrainDisplayName(), TimeUtils.parseDurationShort((int)(start ? stop.getDepartureTimeDeviation() : stop.getArrivalTimeDeviation()))),
+                CustomLanguage.translate(keyNotificationTrainDelayed,
                 ModUtils.formatTime(start ? stop.getRoundedRealTimeDepartureTime() : stop.getRoundedRealTimeArrivalTime(), false),
                 ModUtils.formatTime(start ? stop.getScheduledDepartureTime() : stop.getScheduledArrivalTime(), false),
                 stop.getClientTag().tagName()
@@ -508,13 +508,13 @@ public class ClientRoute extends Route implements AutoCloseable, IListenable<Cli
 
     private void queueConnectionEndangeredNotification(TransferConnection connection) {
         if (shouldShowNotifications()) {
-            ClientWrapper.sendCRNNotification(ELanguage.translate(keyNotificationConnectionEndangeredTitle), ELanguage.translate(keyNotificationConnectionEndangered, connection.getDepartureStation().getTrainDisplayName(), connection.getDepartureStation().getDisplayTitle()));
+            ClientWrapper.sendCRNNotification(CustomLanguage.translate(keyNotificationConnectionEndangeredTitle), CustomLanguage.translate(keyNotificationConnectionEndangered, connection.getDepartureStation().getTrainDisplayName(), connection.getDepartureStation().getDisplayTitle()));
         }
     }
 
     private void queueConnectionMissedNotification(TransferConnection connection) {
         if (shouldShowNotifications()) {
-            ClientWrapper.sendCRNNotification(ELanguage.translate(keyNotificationConnectionMissedTitle), ELanguage.translate(keyNotificationConnectionMissed, connection.getDepartureStation().getTrainDisplayName(), connection.getDepartureStation().getDisplayTitle()));
+            ClientWrapper.sendCRNNotification(CustomLanguage.translate(keyNotificationConnectionMissedTitle), CustomLanguage.translate(keyNotificationConnectionMissed, connection.getDepartureStation().getTrainDisplayName(), connection.getDepartureStation().getDisplayTitle()));
         }
     }
 

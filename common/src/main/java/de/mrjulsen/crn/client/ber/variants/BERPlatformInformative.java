@@ -10,7 +10,7 @@ import de.mrjulsen.crn.block.blockentity.AdvancedDisplayBlockEntity.EUpdateReaso
 import de.mrjulsen.crn.block.properties.ETimeDisplay;
 import de.mrjulsen.crn.block.display.properties.PlatformDisplayFocusSettings;
 import de.mrjulsen.crn.client.ber.AdvancedDisplayRenderInstance;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.data.train.TrainStatus.CompiledTrainStatus;
 import de.mrjulsen.crn.data.train.portable.StationDisplayData;
@@ -46,7 +46,7 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
     private final BERLabel platformLabel = new BERLabel();
     private BERLabel[] focusArea;
     private BERLabel[][] lines;
-    private final BERLabel followingTrainsLabel = new BERLabel(ELanguage.translate(keyFollowingTrains)).setPos(3, 16).setScale(0.2f, 0.2f).setYScale(0.2f);
+    private final BERLabel followingTrainsLabel = new BERLabel(CustomLanguage.translate(keyFollowingTrains)).setPos(3, 16).setScale(0.2f, 0.2f).setYScale(0.2f);
     
 
     @Override
@@ -166,13 +166,13 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
             // Update status label
             Collection<Component> content = new ArrayList<>();
             if (preds.get(0).getTrainData().isCancelled()) {
-                content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.cancelled"));
+                content.add(CustomLanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.cancelled"));
             } else {
                 TrainStopDisplayData  displayData = preds.get(0).getStationData();
                 String delay = getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(displayData.getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(displayData.getDepartureTimeDeviation()));
-                MutableComponent delayComponent = ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed", delay);
+                MutableComponent delayComponent = CustomLanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed", delay);
                 if (getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ABS) {
-                    delayComponent.append(" ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delay_abs_suffix"));
+                    delayComponent.append(" ").append(CustomLanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delay_abs_suffix"));
                 }
                 content.add(delayComponent);
                 for (CompiledTrainStatus status : preds.get(0).getTrainData().getStatus()) {
@@ -360,7 +360,7 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
         float w = blockEntity.getXSizeScaled() * 16 - 5 - platformWidth - x;
         focusArea[LineComponent.DESTINATION.i()]
             .setText(isLast ?
-                ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.arrival") :
+                CustomLanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.arrival") :
                 TextUtils.text(stop.getStationData().getDestination()))
             .setPos(x, 8.5f)
             .setMaxWidth(w, BoundsHitReaction.SCALE_SCROLL)
@@ -368,7 +368,7 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
 
         focusArea[LineComponent.STOPOVERS.i()]
             .setText(isLast ?
-                ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".schedule_board.train_from", stop.getFirstStopName()) :
+                CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".schedule_board.train_from", stop.getFirstStopName()) :
                 TextUtils.concat(TextUtils.text(" \u25CF "), stop.getStopovers().stream().map(a -> (Component)TextUtils.text(a)).toList()))
             .setPos(x, 6)
             .setMaxWidth(w, BoundsHitReaction.SCALE_SCROLL)
@@ -420,7 +420,7 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
         ;
         components[LineComponent.DESTINATION.i()]
             .setText(isLast ?
-                ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".schedule_board.train_from", stop.getFirstStopName()) :
+                CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".schedule_board.train_from", stop.getFirstStopName()) :
                 TextUtils.text(stop.getStationData().getDestination()))
         ;
 

@@ -20,7 +20,7 @@ import de.mrjulsen.crn.client.gui.widgets.DLCreateIconButton;
 import de.mrjulsen.crn.client.gui.widgets.DLCreateIndicator;
 import de.mrjulsen.crn.client.gui.widgets.ModernVerticalScrollBar;
 import de.mrjulsen.crn.client.gui.widgets.RouteDetailsViewer;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.data.SavedRoutesManager;
 import de.mrjulsen.crn.data.navigation.ClientRoute;
 import de.mrjulsen.crn.event.ModCommonEvents;
@@ -44,9 +44,9 @@ import net.minecraft.network.chat.MutableComponent;
 
 public class RouteDetailsScreen extends AbstractNavigatorScreen {
 
-    private final MutableComponent textDeparture = ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_details.departure");
-    private final MutableComponent textArrival = ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_details.arrival");
-    private final MutableComponent timeNowText = ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".time.now");
+    private final MutableComponent textDeparture = CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_details.departure");
+    private final MutableComponent textArrival = CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_details.arrival");
+    private final MutableComponent timeNowText = CustomLanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".time.now");
     private final MutableComponent tooltipSaveRoute = TextUtils.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_details.save_route.tooltip");
     private final MutableComponent tooltipRemoveRoute = TextUtils.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_details.remove_route.tooltip");
     private final MutableComponent tooltipShowPopup = TextUtils.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_details.show_popup.tooltip");

@@ -9,7 +9,7 @@ import de.mrjulsen.crn.block.display.properties.PassengerInformationDetailedSett
 import de.mrjulsen.crn.client.CRNGui;
 import de.mrjulsen.crn.client.ber.AdvancedDisplayRenderInstance;
 import de.mrjulsen.crn.client.gui.ModGuiIcons;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.data.TrainExitSide;
 import de.mrjulsen.crn.data.train.portable.NextConnectionsDisplayData;
@@ -77,7 +77,7 @@ public class BERPassengerInfoInformative implements AbstractAdvancedDisplayRende
         .setYScale(0.2f)
         .setCentered(true)
     ;
-    private final BERLabel nextConnectionsTitleLabel = new BERLabel(ELanguage.translate(keyNextConnections).withStyle(ChatFormatting.BOLD))
+    private final BERLabel nextConnectionsTitleLabel = new BERLabel(CustomLanguage.translate(keyNextConnections).withStyle(ChatFormatting.BOLD))
         .setPos(3, 5.5f)
         .setScale(0.15f, 0.15f)
         .setYScale(0.15f)
@@ -418,7 +418,7 @@ public class BERPassengerInfoInformative implements AbstractAdvancedDisplayRende
             .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
         ;
         trainLineLabel
-            .setText(nextStopAnnounced ? ELanguage.translate(keyNextStop, data.getNextStop().get().getName()) : TextUtils.text((settings.getTrainTextComponents().showTrainName() ? data.getTrainData().getName() + " " : "") + (settings.getTrainTextComponents().showDestination() ? data.getNextStop().get().getDestination() : "")).withStyle(ChatFormatting.BOLD))
+            .setText(nextStopAnnounced ? CustomLanguage.translate(keyNextStop, data.getNextStop().get().getName()) : TextUtils.text((settings.getTrainTextComponents().showTrainName() ? data.getTrainData().getName() + " " : "") + (settings.getTrainTextComponents().showDestination() ? data.getNextStop().get().getDestination() : "")).withStyle(ChatFormatting.BOLD))
             .setMaxWidth(blockEntity.getXSizeScaled() * 16 - 6 - (blockEntity.getXSizeScaled() > 1 && !nextStopAnnounced ? timeLabel.getTextWidth() - 4 : 0) - (blockEntity.getXSizeScaled() > 1 && !nextStopAnnounced ? carriageLabel.getTextWidth() - 5 : 0) - (this.exitSide != TrainExitSide.UNKNOWN ? 4 : 0), BoundsHitReaction.SCALE_SCROLL)
             .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
         ;
@@ -428,7 +428,7 @@ public class BERPassengerInfoInformative implements AbstractAdvancedDisplayRende
             .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
         ;
         dateLabel
-            .setText(ELanguage.translate(keyDate, blockEntity.getLevel().getDayTime() / Level.TICKS_PER_DAY, ModUtils.formatTime(DragonLib.getCurrentWorldTime(), getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA)))
+            .setText(CustomLanguage.translate(keyDate, blockEntity.getLevel().getDayTime() / Level.TICKS_PER_DAY, ModUtils.formatTime(DragonLib.getCurrentWorldTime(), getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA)))
             .setMaxWidth(blockEntity.getXSizeScaled() * 16 - 6, BoundsHitReaction.CUT_OFF)
             .setColor((0xFF << 24) | (getDisplaySettings(blockEntity).getFontColor() & 0x00FFFFFF))
         ;
