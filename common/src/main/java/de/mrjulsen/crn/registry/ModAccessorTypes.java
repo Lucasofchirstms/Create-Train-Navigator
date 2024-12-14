@@ -516,7 +516,7 @@ public final class ModAccessorTypes {
                 );
                 values.put(realTimeData.entryIndex(), realTimeData);
             }
-            nbt.put(DataAccessorType.DEFAULT_NBT_DATA, new TrainRealTimeData(data.getSessionId(), values, data.getStatus(), data.isCancelled()).toNbt());
+            nbt.put(DataAccessorType.DEFAULT_NBT_DATA, TrainRealTimeData.createServer(data.getSessionId(), values, data.getStatus(), data.isCancelled()).toNbt());
             return false;
         }, (hasMore, previousData, iteration, nbt) -> {
             return nbt.contains(DataAccessorType.DEFAULT_NBT_DATA) ? TrainRealTimeData.fromNbt(nbt.getCompound(DataAccessorType.DEFAULT_NBT_DATA)) : null;

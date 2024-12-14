@@ -24,7 +24,9 @@ import de.mrjulsen.mcdragonlib.data.Cache;
 import de.mrjulsen.mcdragonlib.data.Single.MutableSingle;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 
 public class ClientRoutePart extends RoutePart implements ITrainListenerClient<ClientRoutePart.TrainRealTimeData>, IListenable<ClientRoutePart.ListenerNotificationData> {
 
@@ -307,20 +309,42 @@ public class ClientRoutePart extends RoutePart implements ITrainListenerClient<C
     }
 
 
-    public static record TrainRealTimeData(UUID sessionId, Map<Integer, TrainStopRealTimeData> stationData, Set<CompiledTrainStatus> statusInfo, boolean cancelled) {
-
+    public static class TrainRealTimeData {
+        
         private static final String NBT_SESSION_ID = "SessionId";
         private static final String NBT_STATUS_INFOS = "Status";
         private static final String NBT_CANCELLED = "Cancelled";
 
+        private final UUID sessionId;
+        private final Map<Integer, TrainStopRealTimeData> stationData;
+        private final Set<ResourceLocation> statusLocations;
+        private final Set<CompiledTrainStatus> status;
+        private final boolean cancelled;
+
+        private TrainRealTimeData(UUID sessionId, Map<Integer, TrainStopRealTimeData> stationData, Set<ResourceLocation> statusLocations, Set<CompiledTrainStatus> status, boolean cancelled) {
+            this.sessionId = sessionId;
+            this.stationData = stationData;
+            this.statusLocations = statusLocations;
+            this.status = status;
+            this.cancelled = cancelled;
+        }
+
+        public static TrainRealTimeData createServer(UUID sessionId, Map<Integer, TrainStopRealTimeData> stationData, Set<ResourceLocation> statusLocations, boolean cancelled) {
+            return new TrainRealTimeData(sessionId, stationData, statusLocations, null, cancelled);
+        }
+
+        private static TrainRealTimeData createClient(UUID sessionId, Map<Integer, TrainStopRealTimeData> stationData, Set<CompiledTrainStatus> status, boolean cancelled) {
+            return new TrainRealTimeData(sessionId, stationData, null, status, cancelled);
+        }
+
         public CompoundTag toNbt() {
             CompoundTag nbt = new CompoundTag();
             nbt.putUUID(NBT_SESSION_ID, sessionId);
-            ListTag status = new ListTag();
-            for (CompiledTrainStatus s : statusInfo()) {
-                status.add(s.toNbt());
+            ListTag statusList = new ListTag();
+            for (ResourceLocation s : statusLocations) {
+                statusList.add(StringTag.valueOf(s.toString()));
             }
-            nbt.put(NBT_STATUS_INFOS, status);
+            nbt.put(NBT_STATUS_INFOS, statusList);
             nbt.putBoolean(NBT_CANCELLED, cancelled);
 
             for (Map.Entry<Integer, TrainStopRealTimeData> e : stationData.entrySet()) {
@@ -330,12 +354,28 @@ public class ClientRoutePart extends RoutePart implements ITrainListenerClient<C
         }
 
         public static TrainRealTimeData fromNbt(CompoundTag nbt) {
-            return new TrainRealTimeData(
+            return createClient(
                 nbt.getUUID(NBT_SESSION_ID),
                 nbt.getAllKeys().stream().filter(x -> { try { Integer.parseInt(x); return true; } catch (Exception e) { return false; } }).collect(Collectors.toMap(x -> Integer.parseInt(x), x -> TrainStopRealTimeData.fromNbt(nbt.getCompound(x)))),
-                nbt.getList(NBT_STATUS_INFOS, Tag.TAG_COMPOUND).stream().map(x -> CompiledTrainStatus.fromNbt((CompoundTag)x)).collect(Collectors.toSet()),
+                nbt.getList(NBT_STATUS_INFOS, Tag.TAG_STRING).stream().map(x -> CompiledTrainStatus.load(new ResourceLocation(((StringTag)x).getAsString()))).collect(Collectors.toSet()),
                 nbt.getBoolean(NBT_CANCELLED)
             );
+        }
+
+        public UUID sessionId() {
+            return sessionId;
+        }
+
+        public Map<Integer, TrainStopRealTimeData> stationData() {
+            return stationData;
+        }
+
+        public Set<CompiledTrainStatus> statusInfo() {
+            return status;
+        }
+
+        public boolean cancelled() {
+            return cancelled;
         }
     }
 }

@@ -26,7 +26,6 @@ import de.mrjulsen.crn.event.events.TotalDurationTimeChangedEvent;
 import de.mrjulsen.crn.mixin.ScheduleRuntimeAccessor;
 import de.mrjulsen.crn.data.TrainInfo;
 import de.mrjulsen.crn.data.schedule.condition.DynamicDelayCondition;
-import de.mrjulsen.crn.data.train.TrainStatus.CompiledTrainStatus;
 import de.mrjulsen.crn.data.train.TrainStatus.TrainStatusType;
 import de.mrjulsen.crn.util.IListenable;
 import de.mrjulsen.crn.util.LockedList;
@@ -116,13 +115,15 @@ public class TrainData implements IListenable<TrainData> {
     private boolean destinationChanged;
 
     // Cache
+    /*
     private transient final Cache<Set<CompiledTrainStatus>> statusCache = new Cache<>(() -> {
         Set<CompiledTrainStatus> status = new HashSet<>(currentStatusInfos.size());
         for (ResourceLocation loc : currentStatusInfos) {
-            status.add(TrainStatus.Registry.getRegisteredStatus().get(loc).compile(this));
+            status.add(TrainStatus.Registry.getRegisteredStatus().get(loc).compile());
         }
         return status;
-    }, ECachingPriority.LOW);    
+    }, ECachingPriority.LOW); 
+    */   
     private final Cache<Boolean> isDelayedCache = new Cache<>(() -> {
         for (TrainPrediction pred : predictionsChronologically) {
             if (pred.isAnyDelayed()) {
@@ -351,9 +352,16 @@ public class TrainData implements IListenable<TrainData> {
         return new HashMap<>(delaysBySignal);
     }
 
+    public Set<ResourceLocation> getStatus() {
+        return currentStatusInfos;
+    }
+
+    /*
+     
     public Set<CompiledTrainStatus> getStatus() {
         return statusCache.get();
     }
+     */
 
     public int debug_statusInfoCount() {
         return currentStatusInfos.size();
@@ -364,7 +372,6 @@ public class TrainData implements IListenable<TrainData> {
         if (keepPreviousDelays && isDelayed()) {
             currentStatusInfos.add(TrainStatus.DELAY_FROM_PREVIOUS_JOURNEY.getLocation());
         }
-        statusCache.clear();
     }
 
     public void applyStatus() {
@@ -397,8 +404,6 @@ public class TrainData implements IListenable<TrainData> {
         } else {
             currentStatusInfos.remove(TrainStatus.DEFAULT_DELAY.getLocation());
         }
-
-        statusCache.clear();
     }
 
     public boolean hasSectionChanged() {

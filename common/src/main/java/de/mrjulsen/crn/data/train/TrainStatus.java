@@ -2,9 +2,11 @@ package de.mrjulsen.crn.data.train;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -13,13 +15,14 @@ import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.client.ClientWrapper;
 import de.mrjulsen.crn.client.gui.ModGuiIcons;
 import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.exceptions.RuntimeSideException;
 import de.mrjulsen.mcdragonlib.client.util.Graphics;
 import de.mrjulsen.mcdragonlib.client.util.GuiUtils;
 import de.mrjulsen.mcdragonlib.data.Single;
-import de.mrjulsen.mcdragonlib.util.TextUtils;
+import dev.architectury.platform.Platform;
+import net.fabricmc.api.EnvType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -33,21 +36,21 @@ public class TrainStatus {
     //public static final MutableComponent textTrackClosed = ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".delay_reason.track_closed");
 
     private static final Registry REGISTRY = Registry.create(CreateRailwaysNavigator.MOD_ID);
-    public static final TrainStatus DEFAULT_DELAY = REGISTRY.registerDefault("default_delay", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, (data) -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.unknown_delay"), null));
-    public static final TrainStatus DELAY_FROM_PREVIOUS_JOURNEY = REGISTRY.registerDefault("delay_from_previous_journey", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, (data) -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.delay_previous_journey"), null));
-    public static final TrainStatus CANCELLED = REGISTRY.registerDefault("cancelled", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, (data) -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_overview.cancelled"), null));
+    public static final TrainStatus DEFAULT_DELAY = REGISTRY.registerDefault("default_delay", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, () -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.unknown_delay"), null));
+    public static final TrainStatus DELAY_FROM_PREVIOUS_JOURNEY = REGISTRY.registerDefault("delay_from_previous_journey", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, () -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".train_status.delay_previous_journey"), null));
+    public static final TrainStatus CANCELLED = REGISTRY.registerDefault("cancelled", new TrainStatus(TrainStatusCategory.TRAIN, TrainStatusType.DELAY, () -> ELanguage.translate("gui." + CreateRailwaysNavigator.MOD_ID + ".route_overview.cancelled"), null));
     
     public static final int HEIGHT = 9;
 
     private final TrainStatusType importance;
     private final TrainStatusCategory category;
-    private final Function<TrainData, MutableComponent> text;
+    private final Supplier<MutableComponent> text;
     //private final Function<NewTrainData, MutableComponent> reason;
     private final Predicate<TrainData> trigger;
 
     private ResourceLocation location;
 
-    public TrainStatus(TrainStatusCategory category, TrainStatusType importance, Function<TrainData, MutableComponent> text, /*Function<NewTrainData, MutableComponent> reason,*/ Predicate<TrainData> trigger) {
+    public TrainStatus(TrainStatusCategory category, TrainStatusType importance, Supplier<MutableComponent> text, /*Function<NewTrainData, MutableComponent> reason,*/ Predicate<TrainData> trigger) {
         this.importance = importance;
         this.category = category;
         this.text = text;
@@ -59,8 +62,8 @@ public class TrainStatus {
         return importance;
     }
 
-    public MutableComponent getText(TrainData data) {
-        return text.apply(data);
+    public MutableComponent getText() {
+        return text.get();
     }
     
     /*
@@ -73,8 +76,8 @@ public class TrainStatus {
         return trigger != null && trigger.test(data);
     }
 
-    public CompiledTrainStatus compile(TrainData data) {
-        return new CompiledTrainStatus(category, importance, getText(data));//, getReason(data));
+    public CompiledTrainStatus compile() {
+        return new CompiledTrainStatus(location, category, importance, getText());//, getReason(data));
     }
 
     public ResourceLocation getLocation() {
@@ -87,13 +90,14 @@ public class TrainStatus {
     }
 
 
-    public static record CompiledTrainStatus(TrainStatusCategory category, TrainStatusType type, Component text/*, Component reason*/) {
+    public static record CompiledTrainStatus(ResourceLocation id, TrainStatusCategory category, TrainStatusType type, Component text/*, Component reason*/) {
 
         public static final String NBT_CATEGORY = "Category";
         public static final String NBT_TYPE = "Type";
         public static final String NBT_TEXT = "Text";
         public static final String NBT_REASON = "Reason";
 
+        /*
         public CompoundTag toNbt() {
             CompoundTag nbt = new CompoundTag();
             nbt.putByte(NBT_CATEGORY, category().getIndex());
@@ -111,6 +115,7 @@ public class TrainStatus {
                 //TextUtils.text(nbt.getString(NBT_REASON))
             );
         }
+            */
 
         public int render(Graphics graphics, Single<Font> font, int x, int y, int maxWidth) {
             final int color = type().getColor();
@@ -124,6 +129,26 @@ public class TrainStatus {
             graphics.poseStack().popPose();
             
             return Math.max(HEIGHT, height + 2);
+        }
+
+        /** Client-side only! */
+        public static Set<CompiledTrainStatus> load(Set<ResourceLocation> ids) throws RuntimeSideException {
+            if (Platform.getEnv() == EnvType.SERVER) {
+                throw new RuntimeSideException(true);
+            }
+            Set<CompiledTrainStatus> status = new HashSet<>(ids.size());
+            for (ResourceLocation loc : ids) {
+                status.add(TrainStatus.Registry.getRegisteredStatus().get(loc).compile());
+            }
+            return status;
+        }
+
+        /** Client-side only! */
+        public static CompiledTrainStatus load(ResourceLocation id) throws RuntimeSideException {
+            if (Platform.getEnv() == EnvType.SERVER) {
+                throw new RuntimeSideException(true);
+            }
+            return TrainStatus.Registry.getRegisteredStatus().get(id).compile();
         }
     }
 
