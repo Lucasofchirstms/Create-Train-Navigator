@@ -85,10 +85,13 @@ public class BERPlatformSimple implements AbstractAdvancedDisplayRenderer<Platfo
             }
 
             if (x.getTrainData().isCancelled()) {
-                text.append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.cancelled2").getString());
+                text.append(", ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.cancelled2").getString());
             } else if (x.getStationData().isDepartureDelayed()) {
                 String delay = getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(x.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(x.getStationData().getDepartureTimeDeviation()));
-                text.append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed2", delay).getString());
+                text.append(", ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed2", delay).getString());
+                if (getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ABS) {
+                    text.append(" ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delay_abs_suffix"));
+                }
                 if (x.getTrainData().hasStatusInfo()) {
                     text.append(" ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.reason").getString()).append(x.getTrainData().getStatus().get(0).text());
                 }

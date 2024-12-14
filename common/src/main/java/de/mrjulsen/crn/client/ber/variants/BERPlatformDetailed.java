@@ -110,7 +110,13 @@ public class BERPlatformDetailed implements AbstractAdvancedDisplayRenderer<Plat
                     return content.stream();
                 }
                 String delay = getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(x.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(x.getStationData().getDepartureTimeDeviation()));
-                content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_delayed", x.getTrainData().getName(), delay));
+               
+                MutableComponent delayComponent = ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_delayed", x.getTrainData().getName(), delay);
+                if (getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ABS) {
+                    delayComponent.append(" ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delay_abs_suffix"));
+                }
+                content.add(delayComponent);
+
                 for (CompiledTrainStatus status : x.getTrainData().getStatus()) {
                     content.add(status.text());
                 }

@@ -28,6 +28,7 @@ import de.mrjulsen.mcdragonlib.util.TimeUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -169,7 +170,11 @@ public class BERPlatformInformative implements AbstractAdvancedDisplayRenderer<P
             } else {
                 TrainStopDisplayData  displayData = preds.get(0).getStationData();
                 String delay = getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(displayData.getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(displayData.getDepartureTimeDeviation()));
-                content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed", delay));
+                MutableComponent delayComponent = ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delayed", delay);
+                if (getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ABS) {
+                    delayComponent.append(" ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delay_abs_suffix"));
+                }
+                content.add(delayComponent);
                 for (CompiledTrainStatus status : preds.get(0).getTrainData().getStatus()) {
                     content.add(status.text());
                 }

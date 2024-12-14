@@ -178,7 +178,11 @@ public class BERDepartureBoardTable implements AbstractAdvancedDisplayRenderer<D
             return content;
         }
         String delay = getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ETA ? ModUtils.timeRemainingString(data.getStationData().getDepartureTimeDeviation()) : String.valueOf(TimeUtils.formatToMinutes(data.getStationData().getDepartureTimeDeviation()));
-        content.add(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_delayed", data.getTrainData().getName(), delay));
+        MutableComponent delayComponent = ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.information_about_delayed", data.getTrainData().getName(), delay);
+        if (getDisplaySettings(blockEntity).getTimeDisplay() == ETimeDisplay.ABS) {
+            delayComponent.append(" ").append(ELanguage.translate("block." + CreateRailwaysNavigator.MOD_ID + ".advanced_display.ber.delay_abs_suffix"));
+        }
+        content.add(delayComponent);
         for (CompiledTrainStatus status : data.getTrainData().getStatus()) {
             content.add(status.text());
         }
