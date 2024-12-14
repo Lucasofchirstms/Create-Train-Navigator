@@ -588,14 +588,16 @@ public class AdvancedDisplayBlockEntity extends SmartBlockEntity implements
         if (pTag.contains(LEGACY_NBT_COLOR)) {
             getSettingsAs(BasicDisplaySettings.class).ifPresent(x -> x.setFontColor(pTag.getInt(LEGACY_NBT_COLOR)));
         }
-        if (pTag.contains(LEGACY_NBT_PLATFORM_WIDTH)) {
-            getSettingsAs(IPlatformWidthSetting.class).ifPresent(x -> x.setPlatformWidth(pTag.getByte(LEGACY_NBT_PLATFORM_WIDTH)));
-        }
-        if (pTag.contains(LEGACY_NBT_TRAIN_NAME_WIDTH)) {
-            getSettingsAs(ITrainNameWidthSetting.class).ifPresent(x -> x.setTrainNameWidth(pTag.getByte(LEGACY_NBT_TRAIN_NAME_WIDTH)));
-        }
-        if (pTag.contains(LEGACY_NBT_TIME_DISPLAY)) {
-            getSettingsAs(ITimeDisplaySetting.class).ifPresent(x -> x.setTimeDisplay(ETimeDisplay.getById(pTag.getByte(LEGACY_NBT_TIME_DISPLAY))));
+        if (displayTypeId.category().getSource() == EDisplayTypeDataSource.PLATFORM) {            
+            if (pTag.contains(LEGACY_NBT_PLATFORM_WIDTH)) {
+                getSettingsAs(IPlatformWidthSetting.class).ifPresent(x -> x.setPlatformWidth(pTag.getByte(LEGACY_NBT_PLATFORM_WIDTH)));
+            }
+            if (pTag.contains(LEGACY_NBT_TRAIN_NAME_WIDTH)) {
+                getSettingsAs(ITrainNameWidthSetting.class).ifPresent(x -> x.setTrainNameWidth(pTag.getByte(LEGACY_NBT_TRAIN_NAME_WIDTH)));
+            }
+            if (pTag.contains(LEGACY_NBT_TIME_DISPLAY)) {
+                getSettingsAs(ITimeDisplaySetting.class).ifPresent(x -> x.setTimeDisplay(ETimeDisplay.getById(pTag.getByte(LEGACY_NBT_TIME_DISPLAY))));
+            }
         }
         // ###
 
