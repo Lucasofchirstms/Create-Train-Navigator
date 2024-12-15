@@ -3,15 +3,18 @@ package de.mrjulsen.crn.data.train;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+
 import java.util.Set;
 
 import com.simibubi.create.content.trains.entity.Train;
 import de.mrjulsen.crn.CreateRailwaysNavigator;
+import de.mrjulsen.crn.data.schedule.INavigationExtension;
 import de.mrjulsen.crn.data.storage.GlobalSettings;
 import de.mrjulsen.crn.event.CRNEventsManager;
 import de.mrjulsen.crn.event.ModCommonEvents;
@@ -31,7 +34,7 @@ import net.minecraft.world.level.storage.LevelResource;
 
 /** Monitors all trains in the world and processes their data and information to make it available for use. */
 public final class TrainListener {
-    
+
     private transient static final String FILENAME = CreateRailwaysNavigator.MOD_ID + "_train_data.nbt";
 
     public static final ConcurrentHashMap<UUID /* train id */, TrainData> data = new ConcurrentHashMap<>();
@@ -44,10 +47,14 @@ public final class TrainListener {
     public static void init() {
         // Register Event Listeners
         CRNEventsManager.getEvent(GlobalTrainDisplayDataRefreshEventPre.class).register(CreateRailwaysNavigator.MOD_ID, () -> {
-            queueTrainListenerTask(TrainListener::refreshPre);
+            queueTrainListenerTask(() -> {
+                StationDepartureHistory.cleanUpDepartureHistory();
+                TrainListener.refreshPre();
+            });
         });
 
         CRNEventsManager.getEvent(GlobalTrainDisplayDataRefreshEventPost.class).register(CreateRailwaysNavigator.MOD_ID, () -> {
+            TrainUtils.refreshCache();
             queueTrainListenerTask(TrainListener::refreshPost);
         });        
         
@@ -66,6 +73,11 @@ public final class TrainListener {
                     } else {
                         data.get(train.id).leaveDestination();
                     }
+                }
+
+                if (!isArrival && !((INavigationExtension)(Object)train.navigation).isDelayedWaitConditionPending()) {
+                    // If not checking whether a delayed condition is pending, the train would block itself.
+                    StationDepartureHistory.updateDepartureHistory(train, station.name);
                 }
             });
         });
@@ -101,18 +113,30 @@ public final class TrainListener {
     }
 
     public static Set<Train> getAllTrains() {
-        return data.values().stream().map(x -> x.getTrain()).collect(Collectors.toSet());
+        Set<Train> result = new HashSet<>(data.size());
+        for (TrainData v : data.values()) {
+            result.add(v.getTrain());
+        }
+        return result;
     }
 
     public static boolean allTrainsInitialized() {
-        return data.values().stream().filter(x -> 
-            !GlobalSettings.getInstance().isTrainBlacklisted(x.getTrain()) &&
-            !x.getPredictionsRaw().isEmpty() &&
-            !x.getTrain().runtime.paused &&
-            !x.getTrain().derailed &&
-            !x.getTrain().runtime.completed &&
-            TrainUtils.isTrainValid(x.getTrain())
-        ).allMatch(x -> x.isInitialized() && !x.isPreparing());
+        for (TrainData data : data.values()) {
+            if (GlobalSettings.getInstance().isTrainBlacklisted(data.getTrain()) ||
+                data.getPredictionsRaw().isEmpty() ||
+                data.getTrain().runtime.paused ||
+                data.getTrain().derailed ||
+                data.getTrain().runtime.completed ||
+                !TrainUtils.isTrainValid(data.getTrain())
+            ) {
+                continue;
+            }
+
+            if (!data.isInitialized() || data.isPreparing()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void start() {
@@ -207,19 +231,29 @@ public final class TrainListener {
     public synchronized static void refreshPre() {
         if (!trainDataListenerActive) return;
         Set<Train> trains = TrainUtils.getTrains(true);
-        data.keySet().retainAll(trains.stream().filter(x -> !GlobalSettings.getInstance().isTrainBlacklisted(x)).map(x -> x.id).toList());
-        trains.forEach(x -> {
-            data.computeIfAbsent(x.id, a -> TrainData.of(x)).refreshPre();
-        });
+        Iterator<Train> iterator = trains.iterator();
+        while (iterator.hasNext()) {
+            Train train = iterator.next();
+            if (GlobalSettings.getInstance().isTrainBlacklisted(train)) {
+                iterator.remove();
+                data.remove(train.id);
+                continue;
+            }
+            data.computeIfAbsent(train.id, x -> TrainData.of(train)).refreshPre();
+        }
     }
 
     public synchronized static void refreshPost() {
         if (!trainDataListenerActive) return;
-        data.values().forEach(x -> x.refreshPost());
+        for (TrainData train : data.values()) {
+            train.refreshPost();
+        }
     }
 
     public synchronized static void tick() {
         if (!trainDataListenerActive) return;
-        data.values().forEach(x -> x.tick());
+        for (TrainData train : data.values()) {
+            train.tick();
+        }
     }
 }

@@ -3,7 +3,7 @@ package de.mrjulsen.crn.client.gui.overlay.pages;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.config.ModClientConfig;
 import de.mrjulsen.crn.data.train.TrainStop;
 import de.mrjulsen.crn.registry.ModAccessorTypes;
@@ -75,7 +75,7 @@ public class NextConnectionsPage extends AbstractRouteDetailsPage {
     
     @Override
     public void renderMainLayer(Graphics graphics, int mouseX, int mouseY, float partialTicks) {
-        GuiUtils.drawString(graphics, font, 5, 4, ELanguage.translate(keyNextConnections).withStyle(ChatFormatting.BOLD), 0xFFFFFFFF, EAlignment.LEFT, false);
+        GuiUtils.drawString(graphics, font, 5, 4, CustomLanguage.translate(keyNextConnections).withStyle(ChatFormatting.BOLD), 0xFFFFFFFF, EAlignment.LEFT, false);
 
         int y = 16;
         final int spacing = 5;

@@ -235,7 +235,7 @@ public class RouteOverlaySettingsScreen extends DLScreen {
 					return;
 				int ttx = simiWidget.lockedTooltipX == -1 ? pMouseX : simiWidget.lockedTooltipX + simiWidget.getX();
 				int tty = simiWidget.lockedTooltipY == -1 ? pMouseY : simiWidget.lockedTooltipY + simiWidget.getY();
-				graphics.graphics().renderComponentTooltip(font, tooltip, ttx, tty);
+                graphics.graphics().renderComponentTooltip(font, tooltip, ttx, tty);
 			}
         });
     }

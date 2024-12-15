@@ -76,7 +76,7 @@ public class TravelSectionInstruction extends ScheduleInstruction implements ISt
     /** HERE BE DRAGONS! This code is very illegal, but it works... */
 	@Override
 	@Environment(EnvType.CLIENT)
-	public void initConfigurationWidgets(ModularGuiLineBuilder builder) {
+	public void initConfigurationWidgets(ModularGuiLineBuilder builder) {   
         ClientWrapper.initScheduleSectionInstruction(this, builder);
 	}
 

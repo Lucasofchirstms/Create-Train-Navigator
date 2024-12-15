@@ -8,7 +8,6 @@ import com.simibubi.create.foundation.item.TooltipModifier;
 import com.simibubi.create.foundation.item.TooltipHelper.Palette;
 
 import de.mrjulsen.crn.block.AdvancedDisplayBlock;
-import de.mrjulsen.crn.client.input.ModKeys;
 import de.mrjulsen.crn.event.CRNClientEventsRegistryEvent;
 import de.mrjulsen.crn.event.CRNEventsManager;
 import de.mrjulsen.crn.event.ModClientEvents;
@@ -18,7 +17,6 @@ import de.mrjulsen.crn.network.packets.stc.ServerErrorPacket;
 import de.mrjulsen.crn.registry.ModAccessorTypes;
 import de.mrjulsen.crn.registry.ModBlockEntities;
 import de.mrjulsen.crn.registry.ModBlocks;
-import de.mrjulsen.crn.registry.ModCreativeModeTab;
 import de.mrjulsen.crn.registry.ModDisplayTypes;
 import de.mrjulsen.crn.registry.ModExtras;
 import de.mrjulsen.crn.registry.ModItems;
@@ -73,12 +71,6 @@ public final class CreateRailwaysNavigator {
 
     public static void init() {
            
-        CRNPlatformSpecific.registerConfig();
-        
-        if (Platform.getEnv() == EnvType.CLIENT) {
-            ModKeys.init();
-        }
-        ModCreativeModeTab.setup();
         ModBlocks.init();
         ModItems.init();
         ModBlockEntities.init();        
@@ -96,6 +88,7 @@ public final class CreateRailwaysNavigator {
             ServerErrorPacket.class
         ));
         
+        CRNPlatformSpecific.registerConfig();
 
         ModCommonEvents.init();
         if (Platform.getEnv() == EnvType.CLIENT) {

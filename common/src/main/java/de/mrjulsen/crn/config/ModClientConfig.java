@@ -1,7 +1,7 @@
 package de.mrjulsen.crn.config;
 
 import de.mrjulsen.crn.client.gui.overlay.OverlayPosition;
-import de.mrjulsen.crn.client.lang.ELanguage;
+import de.mrjulsen.crn.client.lang.CustomLanguage;
 import de.mrjulsen.crn.util.ESpeedUnit;
 import de.mrjulsen.mcdragonlib.util.TimeUtils.TimeFormat;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -18,7 +18,7 @@ public class ModClientConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> ROUTE_NOTIFICATIONS;
     public static final ForgeConfigSpec.ConfigValue<OverlayPosition> ROUTE_OVERLAY_POSITION;
     public static final ForgeConfigSpec.ConfigValue<TimeFormat> TIME_FORMAT;
-    public static final ForgeConfigSpec.ConfigValue<ELanguage> LANGUAGE;
+    public static final ForgeConfigSpec.ConfigValue<CustomLanguage> LANGUAGE;
     public static final ForgeConfigSpec.ConfigValue<ESpeedUnit> SPEED_UNIT;
 
     public static final double MIN_SCALE = 0.25f;
@@ -42,7 +42,7 @@ public class ModClientConfig {
             .defineEnum("route_overlay.position", OverlayPosition.TOP_LEFT);
         
         LANGUAGE = BUILDER.comment("The language that should be used for announcements of the navigator. Can be different from the game's language settings. (Default: Default)")
-            .defineEnum("language", ELanguage.DEFAULT);
+            .defineEnum("language", CustomLanguage.DEFAULT);
         SPEED_UNIT = BUILDER.comment("The unit to be used to represent speed. (Default: KMH)")
             .defineEnum("speed_unit", ESpeedUnit.KMH);
         TIME_FORMAT = BUILDER.comment("Display Time Format. (Default: Hours 24)")

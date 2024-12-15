@@ -28,8 +28,8 @@ public class CustomIconScreenElement implements ScreenElement {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int x, int y) {
-        GuiUtils.drawTexture(texture, new Graphics(guiGraphics, guiGraphics.pose()), x, y, u, v, uW, vH, texW, texH);
+    public void render(GuiGraphics graphics, int x, int y) {
+        GuiUtils.drawTexture(texture, new Graphics(graphics, graphics.pose()), x, y, u, v, uW, vH, texW, texH);
     }
     
 }

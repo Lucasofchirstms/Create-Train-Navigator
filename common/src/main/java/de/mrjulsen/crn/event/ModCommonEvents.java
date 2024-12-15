@@ -5,7 +5,10 @@ import java.util.Optional;
 import de.mrjulsen.crn.CreateRailwaysNavigator;
 import de.mrjulsen.crn.block.display.AdvancedDisplayTarget;
 import de.mrjulsen.crn.cmd.DebugCommand;
+import de.mrjulsen.crn.config.ModCommonConfig;
 import de.mrjulsen.crn.data.storage.GlobalSettings;
+import de.mrjulsen.crn.data.train.StationDepartureHistory;
+import de.mrjulsen.crn.data.train.TrainData;
 import de.mrjulsen.crn.data.train.TrainListener;
 import de.mrjulsen.crn.event.events.CreateTrainPredictionEvent;
 import de.mrjulsen.crn.event.events.GlobalTrainDisplayDataRefreshEventPost;
@@ -63,6 +66,7 @@ public class ModCommonEvents {
             TrainListener.stop();
             AdvancedDisplayTarget.stop();
             CRNEventsManager.clearEvents();
+            StationDepartureHistory.clearAll();
         });
 
         LifecycleEvent.SERVER_STOPPED.register((server) -> {
@@ -77,8 +81,10 @@ public class ModCommonEvents {
                 long currentTicks = ModCommonEvents.getPhysicalLevel().dayTime();
                 long diff = currentTicks - lastTicks;
                 if (Math.abs(diff) > 1) {
-                    TrainListener.data.values().forEach(x -> x.shiftTime(diff));
-                    CreateRailwaysNavigator.LOGGER.info("All times have been corrected: " + (diff) + " Ticks");
+                    for (TrainData data : TrainListener.data.values()) {
+                        data.shiftTime(diff);
+                    }
+                    if (ModCommonConfig.ADVANCED_LOGGING.get()) CreateRailwaysNavigator.LOGGER.info("All times have been corrected: " + (diff) + " Ticks");
                 }
                 lastTicks = currentTicks;
             }
@@ -86,11 +92,14 @@ public class ModCommonEvents {
             TrainListener.tick();
         });
 
-        CommandRegistrationEvent.EVENT.register((dispatcher, buildContext, selection) -> {
+        CommandRegistrationEvent.EVENT.register((dispatcher, context, selection) -> {
             DebugCommand.register(dispatcher, selection);
         });
 
         LifecycleEvent.SERVER_LEVEL_SAVE.register((server) -> {
+            if (!getCurrentServer().isPresent()) return;
+            if (server != getCurrentServer().get().overworld()) return;
+            
             TrainListener.save();
             if (GlobalSettings.hasInstance()) GlobalSettings.getInstance().save();
         });
