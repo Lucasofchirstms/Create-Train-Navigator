@@ -65,8 +65,8 @@ public class DLCreateSelectionScrollInput extends SelectionScrollInput implement
     }
 
     @Override
-    protected void updateTooltip() {
-        super.updateTooltip();
+    public void onChanged() {
+        super.onChanged();
         cachedTooltip.clear();
     }
 
