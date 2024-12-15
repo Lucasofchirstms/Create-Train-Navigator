@@ -17,6 +17,7 @@ import de.mrjulsen.crn.network.packets.stc.ServerErrorPacket;
 import de.mrjulsen.crn.registry.ModAccessorTypes;
 import de.mrjulsen.crn.registry.ModBlockEntities;
 import de.mrjulsen.crn.registry.ModBlocks;
+import de.mrjulsen.crn.registry.ModCreativeModeTab;
 import de.mrjulsen.crn.registry.ModDisplayTypes;
 import de.mrjulsen.crn.registry.ModExtras;
 import de.mrjulsen.crn.registry.ModItems;
@@ -79,6 +80,7 @@ public final class CreateRailwaysNavigator {
         ModAccessorTypes.init();
         ModTrainStatusInfos.init();
         ModDisplayTypes.init();
+        ModCreativeModeTab.setup();
         
         crnNet = new NetworkManagerBase(MOD_ID, "crn_network", List.of(
             // cts
